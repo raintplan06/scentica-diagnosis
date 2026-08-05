@@ -1,1 +1,1 @@
-# -scentica-curation
+# scentica-diagnosis
