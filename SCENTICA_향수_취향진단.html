@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FDFBF7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SCENTICA">
+<meta name="format-detection" content="telephone=no">
+<title>SCENTICA — 향수 취향 진단</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23211D18'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' fill='%23FDFBF7' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23211D18'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' fill='%23FDFBF7' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FDFBF7;
+  --ink:#211D18;
+  --ink2:#8A8276;
+  --accent:#8C7A5E;
+  --accent-soft:rgba(140,122,94,.4);
+  --line:rgba(33,29,24,.13);
+  --card:#FFFFFF;
+  --amb1:#F2EEE6;
+  --amb2:#F7F4EE;
+  --serif:'Noto Serif KR',serif;
+  --sans:'Pretendard',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+html,body{height:100%}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  overflow:hidden;
+  overflow-x:hidden;
+  width:100%;
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
+}
+.amb{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(120vmax 80vmax at 18% -10%, var(--amb1), transparent 60%),
+    radial-gradient(110vmax 90vmax at 88% 110%, var(--amb2), transparent 60%);
+  transition:background 1.4s ease;
+}
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+.stage{
+  position:relative;z-index:2;height:100vh;height:100dvh;
+  display:flex;flex-direction:column;align-items:center;
+}
+.brand{
+  padding:calc(26px + env(safe-area-inset-top)) 0 0;letter-spacing:.42em;font-size:13px;font-weight:600;
+  color:var(--ink);text-indent:.42em;
+}
+.screen{
+  display:none;width:100%;max-width:880px;flex:1;min-height:0;
+  padding:0 32px calc(32px + env(safe-area-inset-bottom));
+  flex-direction:column;justify-content:center;align-items:center;
+  justify-content:safe center;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
+.screen.on{display:flex;animation:rise .55s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+
+/* ---------- intro ---------- */
+.intro-eyebrow{
+  font-size:14px;letter-spacing:.3em;color:var(--ink2);text-indent:.3em;margin-bottom:22px;
+}
+.intro-title{
+  font-family:var(--serif);font-weight:400;font-size:clamp(38px,6vw,58px);
+  line-height:1.28;text-align:center;letter-spacing:.02em;
+}
+.intro-title em{font-style:normal;color:var(--accent)}
+.intro-sub{
+  margin-top:20px;font-size:17px;color:var(--ink2);line-height:1.7;text-align:center;font-weight:300;
+}
+.store-label{
+  margin-top:52px;font-size:12px;letter-spacing:.22em;color:var(--ink2);text-indent:.22em;
+}
+.stores{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.store{
+  min-height:56px;padding:14px 26px;border-radius:999px;
+  border:1px solid var(--line);background:var(--card);
+  color:var(--ink2);font-size:16px;font-family:var(--sans);cursor:pointer;
+  transition:border-color .25s,color .25s,background .25s,transform .12s;
+}
+.store:active{transform:scale(.96)}
+.store.sel{border-color:var(--ink);color:var(--ink);background:rgba(33,29,24,.05)}
+.btn-start{
+  margin-top:44px;min-height:64px;padding:18px 64px;border-radius:999px;border:none;
+  font-family:var(--serif);font-size:19px;letter-spacing:.14em;text-indent:.14em;cursor:pointer;
+  background:var(--ink);color:var(--paper);
+  opacity:.28;pointer-events:none;transition:opacity .3s,transform .12s;
+}
+.btn-start.ready{opacity:1;pointer-events:auto}
+.btn-start:active{transform:scale(.97)}
+
+/* ---------- quiz ---------- */
+.q-top{width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.btn-back{
+  min-width:56px;min-height:56px;border-radius:50%;border:1px solid var(--line);
+  background:transparent;color:var(--ink2);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:opacity .2s;
+}
+.btn-back:active{transform:scale(.94)}
+.q-step{font-size:13px;letter-spacing:.22em;color:var(--ink2)}
+.q-step b{color:var(--accent);font-weight:600}
+.prog{width:100%;height:2px;background:var(--line);border-radius:2px;margin:14px 0 40px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .5s ease}
+.q-title{
+  font-family:var(--serif);font-weight:400;font-size:clamp(27px,4.6vw,38px);
+  line-height:1.4;text-align:center;width:100%;
+}
+.q-sub{margin-top:12px;font-size:15px;color:var(--ink2);text-align:center;font-weight:300}
+.opts{
+  width:100%;margin-top:40px;display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.opts.single{grid-template-columns:1fr;max-width:620px}
+@media (min-width:960px){.opts.grid3{grid-template-columns:1fr 1fr 1fr}}
+.opt{
+  position:relative;min-height:96px;padding:22px 24px;border-radius:20px;
+  border:1px solid var(--line);background:var(--card);
+  display:flex;flex-direction:column;justify-content:center;gap:7px;
+  cursor:pointer;text-align:left;
+  transition:border-color .22s,background .22s,transform .12s;
+}
+.opt:active{transform:scale(.975)}
+.opt.sel{border-color:var(--ink);background:rgba(33,29,24,.04)}
+.opt .ic{font-size:26px;line-height:1}
+.opt .l{font-size:18px;font-weight:500;letter-spacing:-.01em}
+.opt .s{font-size:14px;color:var(--ink2);font-weight:300;line-height:1.5}
+.opt.sel .l{color:var(--ink);font-weight:600}
+
+/* ---------- loading ---------- */
+.orb{
+  width:120px;height:120px;border-radius:50%;position:relative;margin-bottom:44px;
+  background:radial-gradient(circle at 34% 30%, var(--accent-soft), transparent 62%),
+             radial-gradient(circle at 66% 72%, var(--amb2), var(--amb1));
+  box-shadow:0 0 90px rgba(110,96,72,.25);
+  animation:breathe 2.6s ease-in-out infinite;
+}
+.orb::after{
+  content:'';position:absolute;inset:-14px;border-radius:50%;
+  border:1px solid var(--accent-soft);animation:spin 7s linear infinite;
+  border-top-color:transparent;border-left-color:transparent;
+}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-msg{
+  font-family:var(--serif);font-size:21px;color:var(--ink);min-height:34px;
+  transition:opacity .4s;
+}
+
+/* ---------- result ---------- */
+.screen.result-screen{justify-content:flex-start;overflow-y:auto;padding-top:8px;-webkit-overflow-scrolling:touch}
+.r-head{text-align:center;margin:14px 0 30px;flex-shrink:0}
+.r-eyebrow{font-size:12px;letter-spacing:.3em;color:var(--accent);text-indent:.3em;margin-bottom:14px}
+.r-title{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4.6vw,40px);line-height:1.35}
+.r-sub{margin-top:12px;font-size:15px;color:var(--ink2);font-weight:300}
+.rcard{
+  width:100%;border:1px solid var(--line);border-radius:24px;background:var(--card);
+  padding:30px 30px 26px;margin-bottom:16px;position:relative;overflow:hidden;
+  animation:rise .6s ease both;
+}
+.rcard.first{border-color:var(--accent-soft);background:linear-gradient(150deg,rgba(140,122,94,.08),#FFFFFF 55%);box-shadow:0 12px 40px rgba(33,29,24,.06)}
+.rcard:nth-child(2){animation-delay:.12s}
+.rcard:nth-child(3){animation-delay:.24s}
+.r-rank{
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;
+}
+.rank-tag{font-size:12px;letter-spacing:.24em;color:var(--accent);text-indent:.24em;font-weight:600}
+.badge{
+  font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);
+  color:var(--ink2);letter-spacing:.04em;
+}
+.badge.excl{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.r-name{font-family:var(--serif);font-weight:500;font-size:clamp(26px,4.2vw,34px);letter-spacing:.01em}
+.r-en{font-size:13px;letter-spacing:.26em;color:var(--ink2);margin-top:6px}
+.r-fam{margin-top:8px;font-size:15px;color:var(--accent);letter-spacing:.06em}
+.r-match{
+  position:absolute;top:26px;right:28px;text-align:right;
+}
+.r-match b{font-family:var(--serif);font-size:30px;font-weight:500;color:var(--accent)}
+.r-match span{display:block;font-size:11px;letter-spacing:.18em;color:var(--ink2);margin-top:2px}
+.r-story{
+  margin-top:16px;padding:14px 18px;border-left:2px solid var(--accent-soft);
+  font-size:14.5px;color:var(--ink2);line-height:1.65;font-weight:300;
+}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{
+  font-size:13.5px;padding:7px 15px;border-radius:999px;
+  background:rgba(33,29,24,.05);color:var(--ink);letter-spacing:.02em;
+}
+.journey{margin-top:20px;display:grid;gap:11px}
+.j-row{display:grid;grid-template-columns:74px 1fr;gap:14px;align-items:baseline}
+.j-k{font-size:11.5px;letter-spacing:.16em;color:var(--accent);padding-top:2px}
+.j-v{font-size:15px;line-height:1.66;color:var(--ink);font-weight:300}
+.r-foot{
+  flex-shrink:0;width:100%;text-align:center;margin:22px 0 10px;
+}
+.r-notice{
+  display:inline-block;font-size:15px;color:var(--ink2);line-height:1.7;font-weight:300;
+  padding:14px 26px;border:1px dashed var(--accent-soft);border-radius:16px;
+}
+.r-notice b{color:var(--accent);font-weight:500}
+.btn-retry{
+  display:block;margin:26px auto 8px;min-height:60px;padding:16px 54px;border-radius:999px;
+  border:1px solid var(--line);background:transparent;color:var(--ink2);
+  font-size:16px;letter-spacing:.1em;text-indent:.1em;cursor:pointer;font-family:var(--sans);
+  transition:color .25s,border-color .25s,transform .12s;
+}
+.btn-retry:active{transform:scale(.97);border-color:var(--accent);color:var(--accent)}
+
+@media (max-width:640px){
+  .opts{grid-template-columns:1fr}
+  .r-match{position:static;text-align:left;margin-top:10px}
+  .screen{padding:0 20px calc(24px + env(safe-area-inset-bottom))}
+}
+</style>
+</head>
+<body>
+<div class="amb" id="amb"></div>
+<div class="grain"></div>
+
+<div class="stage">
+  <div class="brand">SCENTICA</div>
+
+  <!-- 인트로 -->
+  <section class="screen on" id="scr-intro">
+    <div class="intro-eyebrow">PERFUME CURATION</div>
+    <h1 class="intro-title">어울리는 향은,<br>이미 <em>당신 안에</em> 있습니다</h1>
+    <p class="intro-sub">일곱 번의 터치로 취향을 읽고,<br>센티카의 향 스물네 가지 중 세 가지를 골라드립니다.</p>
+    <div class="store-label">방문하신 매장</div>
+    <div class="stores" id="stores"></div>
+    <button class="btn-start" id="btnStart">여정 시작하기</button>
+  </section>
+
+  <!-- 설문 -->
+  <section class="screen" id="scr-quiz">
+    <div class="q-top">
+      <button class="btn-back" id="btnBack">←</button>
+      <div class="q-step" id="qStep"></div>
+      <div style="width:56px"></div>
+    </div>
+    <div class="prog"><i id="progBar"></i></div>
+    <h2 class="q-title" id="qTitle"></h2>
+    <p class="q-sub" id="qSub"></p>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- 분석 -->
+  <section class="screen" id="scr-loading">
+    <div class="orb"></div>
+    <div class="load-msg" id="loadMsg">취향의 결을 읽고 있습니다</div>
+  </section>
+
+  <!-- 결과 -->
+  <section class="screen result-screen" id="scr-result">
+    <div class="r-head">
+      <div class="r-eyebrow">YOUR CURATION</div>
+      <h2 class="r-title">당신을 위한 세 가지 향</h2>
+      <p class="r-sub" id="rSub"></p>
+    </div>
+    <div id="rCards" style="width:100%"></div>
+    <div class="r-foot">
+      <div class="r-notice">이 화면을 <b>직원에게 보여주세요</b><br>추천드린 순서대로 시향을 도와드립니다</div>
+      <button class="btn-retry" id="btnRetry">처음부터 다시하기</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===================== 데이터 ===================== */
+/* t: 향 계열 프로필 (0~3) fl플로럴 fr프루티 ci시트러스 wd우디 mu머스크 gm구르망 le레더 in인센스 aq아쿠아틱 pw파우더리 sp스파이시
+   sw 달콤함 / cl 클린함 / pr 존재감(1~3) / ni 니치성향 (0~3)
+   use: d데일리 o외출 g선물 (0~3) / se: 계절 */
+const P=[
+{name:'플레르 에끌로',line:'시그니처',store:null,fam:'플로럴 프루티',
+ notes:['피오니','애프리콧','화이트 머스크'],
+ top:'신선하고 달콤하게 피어나는 첫인상',
+ mid:'섬세한 피오니와 애프리콧·복숭아가 그리는 부드럽고 화사한 무드',
+ dry:'화이트 머스크의 포근하고 클린한 잔향',
+ similar:'밤쉘 · 샤넬 샹스',badges:['데일리 최적','선물 인기'],
+ t:{fl:3,fr:2,mu:1},sw:2,cl:2,pr:1,ni:0,use:{d:3,o:1,g:3},se:['봄','여름','가을','겨울']},
+{name:'로즈 뮤스크',line:'시그니처',store:null,fam:'플로럴 파우더리',
+ notes:['불가리안 로즈','바이올렛','화이트 머스크'],
+ top:'생화 같은 로즈의 고혹적인 첫인상',
+ mid:'불가리안 로즈와 바이올렛·아이리스가 어우러진 깊이 있는 꽃의 향연',
+ dry:'오래 머무는 화이트 머스크의 부드러운 잔향',
+ similar:'딥디크 오 로즈',badges:['고급 로즈 대표','선물 최적'],
+ t:{fl:3,pw:2,mu:1},sw:1,cl:1,pr:3,ni:1,use:{d:1,o:3,g:3},se:['봄','여름','가을','겨울']},
+{name:'상탈 누와',line:'시그니처',store:null,fam:'우디 아로마틱',
+ notes:['프레쉬 허브','샌달우드','베티버'],
+ top:'신선한 허브의 상쾌한 첫인상',
+ mid:'샌달우드의 차분한 우디에 베티버의 은은한 흙내음이 더해진 깊이',
+ dry:'따뜻하고 부드러운 샌달우드의 긴 잔향',
+ similar:'르라보 상탈',badges:['니치 무드','남녀 모두'],
+ t:{wd:3,ci:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:2},se:['가을','겨울']},
+{name:'오드 쟈뎅',line:'시그니처',store:null,fam:'프레쉬 우디 프루티',
+ notes:['달콤한 배','무화과','시더우드'],
+ top:'비 온 뒤 싱그러운 정원의 청량한 첫인상',
+ mid:'달콤한 배와 무화과가 시더우드로 자연스럽게 이어지는 클린 무드',
+ dry:'시더우드의 맑고 가벼운 우디 잔향',
+ similar:'에르메스 운 자르뎅',badges:['클린 데일리','유니섹스'],
+ t:{ci:2,fr:2,wd:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을']},
+{name:'퓨어 모브',line:'시그니처',store:null,fam:'파우더리 플로럴 머스크',
+ notes:['미모사','바이올렛','헬리오트로프'],
+ top:'포근하고 부드러운 파우더리 첫인상',
+ mid:'미모사와 무화과·헬리오트로프의 밸런스 잡힌 포근한 플로럴',
+ dry:'머스크의 따뜻하고 부드러운 잔향',
+ similar:'딥디크 필로시코스',badges:['파우더리','유니섹스'],
+ t:{pw:3,fl:2,mu:2},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:1},se:['봄','가을','겨울']},
+{name:'오드 블론드',line:'시그니처',store:null,fam:'우디 레더 인센스',
+ notes:['소프트 레더','인센스','블론드 우드'],
+ top:'소프트 레더의 딥하고 세련된 첫인상',
+ mid:'인센스의 신비로운 연기와 블론드 우드의 따뜻한 무게감',
+ dry:'고급스럽고 묵직한 블론드 우드의 잔향',
+ similar:null,badges:['딥 우디','시그니처 향'],
+ t:{wd:3,le:3,in:2},sw:0,cl:0,pr:3,ni:2,use:{d:0,o:3,g:3},se:['가을','겨울']},
+{name:'베티베르',line:'시그니처',store:null,fam:'어쓰 우디 시트러스',
+ notes:['베티버','로즈','오크모스'],
+ top:'시트러스와 로즈의 상쾌한 첫인상',
+ mid:'베티버의 신선하고 얼씨한 질감에 로즈가 어우러진 니치 무드',
+ dry:'오크모스의 자연적이고 깊은 우디 잔향',
+ similar:'바이레도 집시워터',badges:['니치 무드','오래 지속'],
+ t:{wd:3,ci:1,fl:1},sw:0,cl:1,pr:2,ni:3,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
+{name:'르 바캉스',line:'시그니처',store:null,fam:'스위트 프루티 시트러스',
+ notes:['만다린','망고','블랙 커런트'],
+ top:'달콤한 망고와 만다린의 기분 좋은 첫인상',
+ mid:'무르익은 과일이 어우러진 파우더리한 프루티 무드',
+ dry:'달콤하고 시트러스한 부드러운 잔향',
+ similar:null,badges:['선물 1순위','전 연령'],
+ t:{fr:3,ci:2,gm:1},sw:3,cl:0,pr:2,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
+{name:'버가우드',line:'시그니처',store:null,fam:'시트러스 우디 스파이시',
+ notes:['베르가못','아가우드','패출리'],
+ top:'베르가못·레몬의 밝고 상쾌한 첫인상',
+ mid:'아가우드의 차분하고 신비로운 우디함에 패출리가 더하는 깊이',
+ dry:'피부 위에서 나만의 향으로 변화하는 시그니처 잔향',
+ similar:'톰포드 오드우드',badges:['개성 시그니처','유니섹스'],
+ t:{ci:2,wd:3,sp:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:1},se:['가을','겨울']},
+{name:'페슈 무아',line:'시그니처',store:null,fam:'소프트 프루티 플로럴',
+ notes:['옐로우 피치','화이트 로즈','알데하이드'],
+ top:'알데하이드의 맑고 깨끗한 첫인상',
+ mid:'옐로우 피치와 화이트 로즈의 달콤하고 소프트한 플로럴',
+ dry:'클린하고 밝은 알데하이드의 잔향',
+ similar:null,badges:['복숭아 1순위','선물 인기'],
+ t:{fr:3,fl:2},sw:2,cl:2,pr:1,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
+{name:'솔레이 누드',line:'시그니처',store:null,fam:'플로럴 오리엔탈',
+ notes:['오렌지 블로썸','일랑일랑','바닐라'],
+ top:'오렌지 블로썸의 달콤하고 관능적인 첫인상',
+ mid:'일랑일랑·자스민의 관능적인 플로럴과 바닐라의 따스함',
+ dry:'바닐라와 우디의 관능적이고 따뜻한 잔향',
+ similar:'샤넬 NO.5',badges:['고급 외출 향','클래식'],
+ t:{fl:3,gm:1},sw:2,cl:0,pr:3,ni:1,use:{d:0,o:3,g:2},se:['봄','가을','겨울']},
+{name:'시트론',line:'시그니처',store:null,fam:'시트러스 아로마틱',
+ notes:['싱그러운 오렌지','바질','패출리'],
+ top:'오렌지·만다린 껍질이 터지는 씁쓸달콤한 첫인상',
+ mid:'오렌지와 바질의 프레쉬하고 활기찬 시트러스 무드',
+ dry:'패출리의 미세한 어쓰 노트가 감각적으로 마무리하는 잔향',
+ similar:'조말론 라임 바질 앤 만다린',badges:['여름 1순위','유니섹스'],
+ t:{ci:3},sw:1,cl:2,pr:1,ni:0,use:{d:3,o:2,g:1},se:['봄','여름']},
+{name:'영 로즈',line:'플라워',store:null,fam:'플로럴 스파이시',
+ notes:['로즈 앱솔루트','핑크 페퍼','베티버'],
+ top:'만다린과 핑크 페퍼의 신선하고 생기 있는 첫인상',
+ mid:'스위트한 로즈 앱솔루트에 핑크 페퍼가 불어넣는 생동감',
+ dry:'베티버의 신선하고 자연스러운 잔향',
+ similar:null,badges:['생동감 로즈','전 연령'],
+ t:{fl:3,sp:1},sw:1,cl:1,pr:2,ni:1,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
+{name:'프리지아 듀',line:'플라워',store:null,fam:'프레쉬 플로럴',
+ notes:['프리지아','투명한 뮤게','풋사과'],
+ top:'풋사과의 상큼하고 달콤한 첫인상',
+ mid:'맑은 뮤게와 프리지아가 그리는 청초한 꽃다발',
+ dry:'깨끗하고 가벼운 플로럴 잔향',
+ similar:'산타마리아 노벨라 프리지아',badges:['청초함','20대 인기'],
+ t:{fl:3,fr:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을','겨울']},
+{name:'베일 드 뉘',line:'플라워',store:null,fam:'플로럴 머스키 알데하이드',
+ notes:['알데하이드','바이올렛','머스크'],
+ top:'알데하이드의 포근하고 섬세한 첫인상',
+ mid:'바이올렛과 머스크가 어우러진 베이스 잔향 같은 부드러움',
+ dry:'머스크의 따뜻하고 오래가는 잔향',
+ similar:null,badges:['긴 잔향','다용도'],
+ t:{mu:3,pw:2,fl:1},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
+{name:'메이 아이 파이브',line:'플라워',store:null,fam:'아로마틱 플로럴',
+ notes:['라일락','유칼립투스','암브레트'],
+ top:'유칼립투스의 신선하고 허브적인 첫인상',
+ mid:'깨끗한 라일락 플로럴과 유칼립투스의 상쾌한 조화',
+ dry:'암브레트의 편안하고 부담 없는 잔향',
+ similar:null,badges:['프레쉬 아로마','편안한 착용감'],
+ t:{fl:2,ci:1},sw:0,cl:2,pr:1,ni:1,use:{d:3,o:2,g:0},se:['봄','여름','가을']},
+{name:'아이보리 뉘',line:'플라워',store:null,fam:'플로럴 스파이시 머스키',
+ notes:['튜베로즈','핑크 페퍼','화이트 머스크'],
+ top:'핑크 페퍼의 스파이시하고 독특한 첫인상',
+ mid:'튜베로즈와 무화과가 만난 독특하면서 맑은 플로럴',
+ dry:'화이트 머스크의 깊고 매력적인 잔향',
+ similar:'딥디크 도손',badges:['독특한 플로럴','매력적 잔향'],
+ t:{fl:2,sp:2,mu:2},sw:1,cl:1,pr:2,ni:2,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
+{name:'자스민 퀴레',line:'플라워',store:null,fam:'플로럴 레더',
+ notes:['자스민','일랑일랑','레더'],
+ top:'화이트 자스민의 깨끗하고 우아한 첫인상',
+ mid:'깨끗한 자스민을 부드럽게 감싸는 레더의 균형',
+ dry:'레더·앰버의 세련되고 고급스러운 잔향',
+ similar:null,badges:['레더 플로럴','남녀 공용'],
+ t:{fl:2,le:2},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:3,g:0},se:['봄','가을','겨울']},
+{name:'더스키 플레르',line:'플라워',store:null,fam:'프루티 플로럴 앰버',
+ notes:['오스만투스','도넛 복숭아','앰버'],
+ top:'도넛 피치와 토바코의 독특하고 매력적인 첫인상',
+ mid:'짙고 달콤한 오스만투스에 프루티 노트가 가득한 니치 무드',
+ dry:'앰버의 포근하고 따뜻한 잔향',
+ similar:null,badges:['니치 무드','앰버 잔향'],
+ t:{fr:2,fl:2,gm:1},sw:2,cl:0,pr:2,ni:3,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
+{name:'아벤쿠아 25',en:'AVENQUA 25',line:'익스클루시브',store:'광안',fam:'아쿠아틱 플로럴',
+ story:'광안리 바다를 담은 향 — 숫자 \'25\'는 센티카 광안의 주소에서 왔습니다.',
+ notes:['아쿠아틱 어코드','로투스','화이트 머스크'],
+ top:'시원한 바닷바람 같은 아쿠아틱 첫인상',
+ mid:'로투스와 화이트 머스크의 깨끗하고 부드러운 플로럴',
+ dry:'화이트 머스크의 클린하고 지속적인 잔향',
+ similar:null,badges:['광안 단독','바다 무드'],
+ t:{aq:3,ci:1,mu:1},sw:0,cl:3,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름']},
+{name:'브뤼떼 12',en:'BRUTEA 12',line:'익스클루시브',store:'전포',fam:'구르망 우디 앰버',
+ story:'전포 카페거리를 담은 향 — 숫자 \'12\'는 센티카 전포의 주소에서 왔습니다.',
+ notes:['커피','통카빈','벤조인'],
+ top:'커피와 바닐라의 달콤하고 포근한 첫인상',
+ mid:'통카빈과 벤조인의 따뜻하고 부드러운 구르망 무드',
+ dry:'벤조인의 따뜻하고 달콤한 잔향',
+ similar:null,badges:['전포 단독','커피 컨셉'],
+ t:{gm:3,wd:1},sw:3,cl:0,pr:2,ni:2,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
+{name:'잉크하이브 21',en:'INKHIVE 21',line:'익스클루시브',store:'소격',fam:'인센스 우디 스모키',
+ story:'소격동 한옥 서가, 벼루 위 먹을 가는 순간을 담은 향 — 숫자 \'21\'은 센티카 소격의 주소에서 왔습니다.',
+ notes:['올리바눔','먹 (墨)','패출리'],
+ top:'알싸한 블랙 페퍼와 훈연된 올리바눔 — 묵이 피어오르는 첫인상',
+ mid:'씁쓸한 훈연이 시더우드·샌달우드와 어우러지는 깊고 지적인 우디',
+ dry:'오래된 서가에 고인 먹향처럼 길게 머무는 샌달우드',
+ similar:null,badges:['소격 단독','한국적 인센스'],
+ t:{in:3,wd:3},sw:0,cl:0,pr:3,ni:3,use:{d:1,o:2,g:2},se:['가을','겨울']},
+{name:'베이지 70',en:'BEIJI 70',line:'익스클루시브',store:'소격',fam:'파우더리 스킨 머스크',
+ story:'한옥 창살 사이 햇살과 따스한 한지의 색감을 담은 향 — 숫자 \'70\'은 센티카 소격의 주소에서 왔습니다.',
+ notes:['쌀','암브레트','머스크'],
+ top:'맑고 고소한 쌀과 부드러운 우유의 투명한 첫인상',
+ mid:'암브레트와 머스크가 포근하게 감싸는 한옥 마루의 고요한 온기',
+ dry:'제2의 피부처럼 정착하는 살결 같은 머스크 잔향',
+ similar:null,badges:['소격 단독','스킨 머스크'],
+ t:{mu:3,pw:2},sw:1,cl:2,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
+{name:'샤플렛 54',en:'SAFLEAT 54',line:'익스클루시브',store:'한남',fam:'레더 우디 플로럴',
+ story:'한남동의 세련된 건축과 편집숍 거리를 담은 향 — 숫자 \'54\'는 센티카 한남의 주소에서 왔습니다.',
+ notes:['샤프란','미모사','스웨이드'],
+ top:'이국적인 샤프란과 미모사의 노란빛 온기가 퍼지는 첫인상',
+ mid:'벨벳 같은 스웨이드 위로 미모사 플로럴이 스며드는 감각적인 레더',
+ dry:'피부 위에 오래 머무는 스타일리시한 스웨이드 잔향',
+ similar:null,badges:['한남 단독','플로럴 레더'],
+ t:{le:2,fl:2,sp:1,wd:1},sw:1,cl:0,pr:2,ni:2,use:{d:1,o:2,g:3},se:['봄','가을','겨울']}
+];
+
+const g=(p,k)=>p.t[k]||0;
+
+/* ===================== 앰비언트 무드 컬러 ===================== */
+const MOODS={
+  fresh:['#DEEADA','#EFF4E8'], aqua:['#D9E9EB','#EBF3F2'], incense:['#E2DED8','#EDE9E3'],
+  musk:['#EEE5D9','#F6F0E7'], gourmand:['#EADCCD','#F4EBDF'], floral:['#F4E2E1','#F9EFED'],
+  fruity:['#F6E5D3','#FAF0E3'], citrus:['#EAEED4','#F4F5E4'], woody:['#E8E0CF','#F1ECDE'],
+  def:['#F2EEE6','#F7F4EE']
+};
+function setMood(m){
+  const c=MOODS[m]||MOODS.def;
+  document.documentElement.style.setProperty('--amb1',c[0]);
+  document.documentElement.style.setProperty('--amb2',c[1]);
+}
+
+/* ===================== 설문 ===================== */
+const QUESTIONS=[
+{title:'오늘, 향수를 찾는 이유는?',sub:'가장 가까운 하나를 골라주세요',cls:'single',opts:[
+  {i:'🌿',l:'나의 데일리 향',s:'매일 곁에 두고 싶은 부담 없는 향',fx:p=>p.use.d*2},
+  {i:'✨',l:'특별한 날의 향',s:'모임과 외출, 인상을 남기고 싶은 순간',fx:p=>p.use.o*2},
+  {i:'🎁',l:'소중한 사람의 선물',s:'마음을 대신 전할 한 병',fx:p=>p.use.g*2}
+]},
+{title:'눈을 감으면, 어디에 머물고 싶나요?',sub:'끌리는 장면 하나를 골라주세요',cls:'grid3',opts:[
+  {i:'🌧️',l:'비 갠 아침의 정원',s:'싱그러운 풀내음과 맑은 공기',mood:'fresh',fx:p=>g(p,'ci')*1.5+p.cl*1.5},
+  {i:'🌊',l:'한여름의 바닷가',s:'밀려오는 파도와 시원한 바람',mood:'aqua',fx:p=>g(p,'aq')*2.5+g(p,'ci')*1},
+  {i:'📖',l:'오래된 서재',s:'책장 사이 먹과 나무의 내음',mood:'incense',fx:p=>g(p,'in')*2+g(p,'wd')*1.5},
+  {i:'🧶',l:'포근한 니트의 품',s:'살결에 스미는 따뜻한 온기',mood:'musk',fx:p=>g(p,'mu')*2+g(p,'pw')*1.5},
+  {i:'☕',l:'오후의 카페',s:'갓 내린 커피와 달콤한 디저트',mood:'gourmand',fx:p=>g(p,'gm')*2.5+p.sw*.5},
+  {i:'💐',l:'만개한 꽃집',s:'가득 안긴 꽃다발의 향연',mood:'floral',fx:p=>g(p,'fl')*2}
+]},
+{title:'첫 만남, 어떤 인상에 끌리나요?',sub:'향수의 첫 향, 탑 노트의 취향입니다',opts:[
+  {i:'🍋',l:'톡 터지는 상큼함',s:'시트러스의 밝은 에너지',mood:'citrus',fx:p=>g(p,'ci')*1.5},
+  {i:'🍑',l:'무르익은 과일의 달콤함',s:'복숭아·망고 같은 프루티',mood:'fruity',fx:p=>g(p,'fr')*1.5},
+  {i:'🌸',l:'화사하게 피어나는 꽃',s:'로즈·피오니 같은 플로럴',mood:'floral',fx:p=>g(p,'fl')*1.5},
+  {i:'🫧',l:'갓 세탁한 듯한 깨끗함',s:'비누처럼 맑고 클린한 향',mood:'musk',fx:p=>p.cl*1.5+g(p,'mu')*.5},
+  {i:'🪵',l:'차분히 가라앉는 나무',s:'우디의 안정감 있는 무게',mood:'woody',fx:p=>g(p,'wd')*1.5}
+]},
+{title:'달콤함은, 어느 정도가 좋나요?',sub:'',cls:'single',opts:[
+  {i:'🍯',l:'충분히 달콤하게',s:'기분 좋아지는 스위트함이 좋아요',fx:p=>(3-Math.abs(3-p.sw))*1.5},
+  {i:'🌙',l:'은은하게 스치듯',s:'달콤함은 살짝만 느껴지면 충분해요',fx:p=>(3-Math.abs(1.5-p.sw))*1.5},
+  {i:'🍃',l:'달지 않게, 담백하게',s:'클린하거나 드라이한 쪽이 좋아요',fx:p=>(3-p.sw)*1.5}
+]},
+{title:'향의 존재감은 어떠면 좋을까요?',sub:'',cls:'single',opts:[
+  {i:'🕊️',l:'살결처럼 은은하게',s:'스치듯 가까이에서만 느껴지도록',fx:p=>(3-Math.abs(1-p.pr))*2},
+  {i:'🌤️',l:'기분 좋은 존재감',s:'과하지 않게, 그러나 분명하게',fx:p=>(3-Math.abs(2-p.pr))*2},
+  {i:'🔥',l:'확실한 나의 인장',s:'지나간 자리에 향이 기억되도록',fx:p=>(3-Math.abs(3-p.pr))*2}
+]},
+{title:'향수와 얼마나 친한가요?',sub:'',cls:'single',opts:[
+  {i:'🌱',l:'이제 알아가는 중',s:'향수는 아직 낯설고 궁금해요',fx:p=>(3-p.ni)*1.5},
+  {i:'🌷',l:'즐겨 뿌리는 편',s:'좋아하는 향이 몇 가지 있어요',fx:p=>p.ni>=1&&p.ni<=2?3:1},
+  {i:'🖤',l:'향을 수집하는 편',s:'남들과 다른 특별한 향을 찾아요',fx:p=>p.ni*1.5}
+]},
+{title:'이 향, 언제 곁에 두고 싶나요?',sub:'',cls:'single',opts:[
+  {i:'🌸',l:'봄과 여름',s:'가볍고 산뜻한 계절의 향',fx:p=>(p.se.includes('봄')+p.se.includes('여름'))*2},
+  {i:'🍂',l:'가을과 겨울',s:'깊고 따뜻한 계절의 향',fx:p=>(p.se.includes('가을')+p.se.includes('겨울'))*2},
+  {i:'♾️',l:'사계절 내내',s:'계절을 타지 않는 나만의 향',fx:p=>p.se.length===4?4:p.se.length===3?2:0}
+]}
+];
+
+/* ===================== 상태 & 화면 전환 ===================== */
+const $=id=>document.getElementById(id);
+let store=null, step=0, answers=[];
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  const el=$(id); el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+}
+
+/* ---------- 인트로 ---------- */
+const STORES=['광안','전포','한남','소격','팝업·기타'];
+STORES.forEach(s=>{
+  const b=document.createElement('button');
+  b.className='store'; b.textContent=s==='팝업·기타'?s:`센티카 ${s}`;
+  b.addEventListener('click',()=>{
+    store=s;
+    document.querySelectorAll('.store').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');
+    $('btnStart').classList.add('ready');
+  });
+  $('stores').appendChild(b);
+});
+$('btnStart').addEventListener('click',()=>{ step=0; answers=[]; setMood('def'); renderQ(); show('scr-quiz'); });
+
+/* ---------- 설문 ---------- */
+function renderQ(){
+  const q=QUESTIONS[step];
+  $('qStep').innerHTML=`<b>0${step+1}</b> — 0${QUESTIONS.length}`;
+  $('progBar').style.width=`${(step)/QUESTIONS.length*100}%`;
+  $('qTitle').textContent=q.title;
+  $('qSub').textContent=q.sub||''; $('qSub').style.display=q.sub?'':'none';
+  const box=$('opts');
+  box.className='opts'+(q.cls?' '+q.cls:'');
+  box.innerHTML='';
+  q.opts.forEach((o,idx)=>{
+    const d=document.createElement('button');
+    d.className='opt';
+    d.innerHTML=`<span class="ic">${o.i}</span><span class="l">${o.l}</span>${o.s?`<span class="s">${o.s}</span>`:''}`;
+    d.addEventListener('click',()=>{
+      if(box.dataset.lock)return;
+      box.dataset.lock='1';
+      d.classList.add('sel');
+      if(o.mood)setMood(o.mood);
+      answers[step]=idx;
+      setTimeout(()=>{delete box.dataset.lock; next();},380);
+    });
+    box.appendChild(d);
+  });
+}
+function next(){
+  if(step<QUESTIONS.length-1){ step++; renderQ(); }
+  else finish();
+}
+$('btnBack').addEventListener('click',()=>{
+  if(step>0){ answers.pop(); step--; renderQ(); }
+  else show('scr-intro');
+});
+
+/* ---------- 분석 연출 ---------- */
+const LOAD_MSGS=['취향의 결을 읽고 있습니다','노트를 하나씩 고르고 있습니다','잔향의 온도를 맞추고 있습니다'];
+function finish(){
+  $('progBar').style.width='100%';
+  show('scr-loading');
+  let i=0; $('loadMsg').textContent=LOAD_MSGS[0];
+  const t=setInterval(()=>{
+    i++;
+    if(i<LOAD_MSGS.length){
+      $('loadMsg').style.opacity=0;
+      setTimeout(()=>{$('loadMsg').textContent=LOAD_MSGS[i];$('loadMsg').style.opacity=1;},350);
+    }else{ clearInterval(t); renderResult(); }
+  },1100);
+}
+
+/* ---------- 스코어링 ---------- */
+function compute(){
+  const pool=P.filter(p=>!p.store||p.store===store);
+  const scored=pool.map(p=>{
+    let s=0;
+    QUESTIONS.forEach((q,i)=>{ s+=q.opts[answers[i]].fx(p); });
+    if(p.store&&p.store===store)s+=3;
+    return {p,s};
+  });
+  scored.sort((a,b)=>b.s-a.s);
+  return scored.slice(0,3);
+}
+
+/* ---------- 결과 ---------- */
+const RANKS=['베스트 매치','두 번째 향','세 번째 향'];
+const FAM_MOOD=[['aq','aqua'],['in','incense'],['gm','gourmand'],['le','woody'],['wd','woody'],['mu','musk'],['pw','musk'],['fr','fruity'],['ci','citrus'],['fl','floral']];
+function renderResult(){
+  const top3=compute();
+  const best=top3[0];
+  const lead=FAM_MOOD.find(([k])=>g(best.p,k)>=2);
+  setMood(lead?lead[1]:'floral');
+  $('rSub').textContent=store&&store!=='팝업·기타'?`센티카 ${store}에서 만날 수 있는 큐레이션입니다`:'센티카가 고른 오늘의 큐레이션입니다';
+  $('rCards').innerHTML=top3.map((r,i)=>{
+    const p=r.p, pct=Math.max(62,Math.round(98*r.s/best.s));
+    return `<article class="rcard${i===0?' first':''}">
+      <div class="r-rank">
+        <span class="rank-tag">${RANKS[i]}</span>
+        <span class="badge${p.line==='익스클루시브'?' excl':''}">${p.line==='익스클루시브'?`${p.store} 매장 단독`:p.line+' 라인'}</span>
+      </div>
+      <h3 class="r-name">${p.name}</h3>
+      ${p.en?`<div class="r-en">${p.en}</div>`:''}
+      <div class="r-fam">${p.fam}</div>
+      <div class="r-match"><b>${pct}%</b><span>MATCH</span></div>
+      ${p.story?`<div class="r-story">${p.story}</div>`:''}
+      <div class="chips">${p.notes.map(n=>`<span class="chip">${n}</span>`).join('')}</div>
+      <div class="journey">
+        <div class="j-row"><span class="j-k">첫인상</span><span class="j-v">${p.top}</span></div>
+        <div class="j-row"><span class="j-k">피어남</span><span class="j-v">${p.mid}</span></div>
+        <div class="j-row"><span class="j-k">잔향</span><span class="j-v">${p.dry}</span></div>
+      </div>
+    </article>`;
+  }).join('');
+  show('scr-result');
+  $('scr-result').scrollTop=0;
+  armIdle();
+}
+
+/* ---------- 리셋 & 방치 타이머 ---------- */
+function reset(){
+  store=null; step=0; answers=[]; setMood('def');
+  document.querySelectorAll('.store').forEach(x=>x.classList.remove('sel'));
+  $('btnStart').classList.remove('ready');
+  show('scr-intro');
+}
+$('btnRetry').addEventListener('click',reset);
+
+let idleT=null;
+function armIdle(){
+  clearTimeout(idleT);
+  idleT=setTimeout(()=>{ if($('scr-result').classList.contains('on'))reset(); },120000);
+}
+document.addEventListener('touchstart',()=>{ if($('scr-result').classList.contains('on'))armIdle(); },{passive:true});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+</body>
+</html>
