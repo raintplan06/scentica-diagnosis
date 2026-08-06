@@ -3,30 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#FDFBF7">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SCENTICA">
 <meta name="format-detection" content="telephone=no">
 <title>SCENTICA — 향수 취향 진단</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23211D18'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' fill='%23FDFBF7' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23211D18'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='40' fill='%23FDFBF7' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000'/%3E%3Ctext x='32' y='45' font-family='Pretendard,sans-serif' font-size='40' fill='%23FFFFFF' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3Ctext x='32' y='45' font-family='Pretendard,sans-serif' font-size='40' fill='%23FFFFFF' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#FDFBF7;
-  --ink:#211D18;
-  --ink2:#8A8276;
-  --accent:#8C7A5E;
-  --accent-soft:rgba(140,122,94,.4);
-  --line:rgba(33,29,24,.13);
+  --paper:#FFFFFF;
+  --ink:#000000;
+  --ink2:#6E6E6E;
+  --accent:#000000;
+  --accent-soft:rgba(0,0,0,.4);
+  --line:rgba(0,0,0,.14);
   --card:#FFFFFF;
-  --amb1:#F2EEE6;
-  --amb2:#F7F4EE;
-  --serif:'Noto Serif KR',serif;
+  --amb1:#EFEFEF;
+  --amb2:#F8F8F8;
+  --serif:'Pretendard',sans-serif;
   --sans:'Pretendard',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -84,7 +82,7 @@ body{
   font-family:var(--serif);font-weight:400;font-size:clamp(38px,6vw,58px);
   line-height:1.28;text-align:center;letter-spacing:.02em;
 }
-.intro-title em{font-style:normal;color:var(--accent)}
+.intro-title em{font-style:normal;color:var(--accent);font-weight:600}
 .intro-sub{
   margin-top:20px;font-size:17px;color:var(--ink2);line-height:1.7;text-align:center;font-weight:300;
 }
@@ -99,7 +97,7 @@ body{
   transition:border-color .25s,color .25s,background .25s,transform .12s;
 }
 .store:active{transform:scale(.96)}
-.store.sel{border-color:var(--ink);color:var(--ink);background:rgba(33,29,24,.05)}
+.store.sel{border-color:var(--ink);color:var(--ink);background:rgba(0,0,0,.05)}
 .btn-start{
   margin-top:44px;min-height:64px;padding:18px 64px;border-radius:999px;border:none;
   font-family:var(--serif);font-size:19px;letter-spacing:.14em;text-indent:.14em;cursor:pointer;
@@ -139,7 +137,7 @@ body{
   transition:border-color .22s,background .22s,transform .12s;
 }
 .opt:active{transform:scale(.975)}
-.opt.sel{border-color:var(--ink);background:rgba(33,29,24,.04)}
+.opt.sel{border-color:var(--ink);background:rgba(0,0,0,.04)}
 .opt .ic{font-size:26px;line-height:1}
 .opt .l{font-size:18px;font-weight:500;letter-spacing:-.01em}
 .opt .s{font-size:14px;color:var(--ink2);font-weight:300;line-height:1.5}
@@ -150,7 +148,7 @@ body{
   width:120px;height:120px;border-radius:50%;position:relative;margin-bottom:44px;
   background:radial-gradient(circle at 34% 30%, var(--accent-soft), transparent 62%),
              radial-gradient(circle at 66% 72%, var(--amb2), var(--amb1));
-  box-shadow:0 0 90px rgba(110,96,72,.25);
+  box-shadow:0 0 90px rgba(0,0,0,.22);
   animation:breathe 2.6s ease-in-out infinite;
 }
 .orb::after{
@@ -176,7 +174,7 @@ body{
   padding:30px 30px 26px;margin-bottom:16px;position:relative;overflow:hidden;
   animation:rise .6s ease both;
 }
-.rcard.first{border-color:var(--accent-soft);background:linear-gradient(150deg,rgba(140,122,94,.08),#FFFFFF 55%);box-shadow:0 12px 40px rgba(33,29,24,.06)}
+.rcard.first{border-color:var(--accent-soft);background:linear-gradient(150deg,rgba(0,0,0,.06),#FFFFFF 55%);box-shadow:0 12px 40px rgba(0,0,0,.08)}
 .rcard:nth-child(2){animation-delay:.12s}
 .rcard:nth-child(3){animation-delay:.24s}
 .r-rank{
@@ -203,7 +201,7 @@ body{
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
 .chip{
   font-size:13.5px;padding:7px 15px;border-radius:999px;
-  background:rgba(33,29,24,.05);color:var(--ink);letter-spacing:.02em;
+  background:rgba(0,0,0,.05);color:var(--ink);letter-spacing:.02em;
 }
 .journey{margin-top:20px;display:grid;gap:11px}
 .j-row{display:grid;grid-template-columns:74px 1fr;gap:14px;align-items:baseline}
@@ -468,10 +466,10 @@ const g=(p,k)=>p.t[k]||0;
 
 /* ===================== 앰비언트 무드 컬러 ===================== */
 const MOODS={
-  fresh:['#DEEADA','#EFF4E8'], aqua:['#D9E9EB','#EBF3F2'], incense:['#E2DED8','#EDE9E3'],
-  musk:['#EEE5D9','#F6F0E7'], gourmand:['#EADCCD','#F4EBDF'], floral:['#F4E2E1','#F9EFED'],
-  fruity:['#F6E5D3','#FAF0E3'], citrus:['#EAEED4','#F4F5E4'], woody:['#E8E0CF','#F1ECDE'],
-  def:['#F2EEE6','#F7F4EE']
+  fresh:['#EDEDED','#F8F8F8'], aqua:['#E6E6E6','#F5F5F5'], incense:['#DFDFDF','#EFEFEF'],
+  musk:['#EAEAEA','#F6F6F6'], gourmand:['#E2E2E2','#F1F1F1'], floral:['#F0F0F0','#F9F9F9'],
+  fruity:['#EBEBEB','#F7F7F7'], citrus:['#F1F1F1','#FAFAFA'], woody:['#DCDCDC','#EEEEEE'],
+  def:['#EFEFEF','#F8F8F8']
 };
 function setMood(m){
   const c=MOODS[m]||MOODS.def;
