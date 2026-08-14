@@ -44,10 +44,7 @@ body{
 }
 .amb{
   position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(120vmax 80vmax at 18% -10%, var(--amb1), transparent 60%),
-    radial-gradient(110vmax 90vmax at 88% 110%, var(--amb2), transparent 60%);
-  transition:background 1.4s ease;
+  background:var(--paper);
 }
 .grain{
   position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.03;
@@ -147,7 +144,7 @@ body{
 .orb{
   width:120px;height:120px;border-radius:50%;position:relative;margin-bottom:44px;
   background:radial-gradient(circle at 34% 30%, var(--accent-soft), transparent 62%),
-             radial-gradient(circle at 66% 72%, var(--amb2), var(--amb1));
+             radial-gradient(circle at 66% 72%, #F8F8F8, #EFEFEF);
   box-shadow:0 0 90px rgba(0,0,0,.22);
   animation:breathe 2.6s ease-in-out infinite;
 }
@@ -208,20 +205,34 @@ body{
 .j-k{font-size:11.5px;letter-spacing:.16em;color:var(--accent);padding-top:2px}
 .j-v{font-size:15px;line-height:1.66;color:var(--ink);font-weight:300}
 .r-foot{
-  flex-shrink:0;width:100%;text-align:center;margin:22px 0 10px;
+  flex-shrink:0;width:100%;display:flex;flex-direction:column;gap:16px;margin:22px 0 4px;
 }
 .r-notice{
-  display:inline-block;font-size:15px;color:var(--ink2);line-height:1.7;font-weight:300;
-  padding:14px 26px;border:1px dashed var(--accent-soft);border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  width:100%;padding:22px 24px;border-radius:18px;
+  background:rgba(0,0,0,.045);border:1px solid var(--line);
+  color:var(--ink);text-align:center;
 }
-.r-notice b{color:var(--accent);font-weight:500}
+.notice-badge{font-size:11px;letter-spacing:.24em;text-indent:.24em;color:var(--ink2);font-weight:600}
+.notice-title{font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.01em;color:var(--ink)}
+.notice-sub{font-size:14px;color:var(--ink2);font-weight:300;line-height:1.6}
 .btn-retry{
-  display:block;margin:26px auto 8px;min-height:60px;padding:16px 54px;border-radius:999px;
-  border:1px solid var(--line);background:transparent;color:var(--ink2);
-  font-size:16px;letter-spacing:.1em;text-indent:.1em;cursor:pointer;font-family:var(--sans);
-  transition:color .25s,border-color .25s,transform .12s;
+  display:block;width:100%;min-height:72px;padding:18px 24px;border-radius:999px;
+  border:1.5px solid var(--ink);background:transparent;color:var(--ink);
+  font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.05em;text-indent:.05em;
+  cursor:pointer;transition:background .25s,transform .12s;
 }
-.btn-retry:active{transform:scale(.97);border-color:var(--accent);color:var(--accent)}
+.btn-retry:active{transform:scale(.97);background:rgba(0,0,0,.05)}
+.r-cta{width:100%;margin:16px 0 4px}
+.btn-cta{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  width:100%;min-height:72px;padding:18px 24px;border-radius:999px;
+  background:var(--ink);color:var(--paper);text-decoration:none;
+  text-align:center;transition:transform .12s,opacity .2s;
+}
+.btn-cta:active{transform:scale(.97)}
+.btn-cta .cta-label{font-family:var(--serif);font-size:16px;font-weight:600;letter-spacing:.01em}
+.btn-cta .cta-sub{font-size:12.5px;color:rgba(255,255,255,.65);letter-spacing:.03em}
 
 @media (max-width:640px){
   .opts{grid-template-columns:1fr}
@@ -275,8 +286,18 @@ body{
     </div>
     <div id="rCards" style="width:100%"></div>
     <div class="r-foot">
-      <div class="r-notice">이 화면을 <b>직원에게 보여주세요</b><br>추천드린 순서대로 시향을 도와드립니다</div>
+      <div class="r-notice">
+        <span class="notice-badge">PLEASE SHOW STAFF</span>
+        <strong class="notice-title">이 화면을 직원에게 보여주세요</strong>
+        <span class="notice-sub">추천드린 순서대로 시향을 도와드립니다</span>
+      </div>
       <button class="btn-retry" id="btnRetry">처음부터 다시하기</button>
+    </div>
+    <div class="r-cta">
+      <a class="btn-cta" href="https://scentica.co.kr/product/detail.html?product_no=74" target="_blank" rel="noopener">
+        <span class="cta-label">퍼퓸 3종 샘플 키트 무료 증정</span>
+        <span class="cta-sub">센티카 이벤트 페이지로 이동 →</span>
+      </a>
     </div>
   </section>
 </div>
@@ -289,175 +310,175 @@ body{
 const P=[
 {name:'플레르 에끌로',line:'시그니처',store:null,fam:'플로럴 프루티',
  notes:['피오니','애프리콧','화이트 머스크'],
- top:'신선하고 달콤하게 피어나는 첫인상',
- mid:'섬세한 피오니와 애프리콧·복숭아가 그리는 부드럽고 화사한 무드',
- dry:'화이트 머스크의 포근하고 클린한 잔향',
+ top:'스파클링한 애프리콧과 만다린 잎이 과즙처럼 터지는 청량달콤한 첫 확산, 옅은 알데하이드가 밝기를 더함',
+ mid:'하트로 넘어가며 피오니 앱솔루트가 벨벳 같은 질감으로 피어나고, 잘 익은 복숭아 과육의 즙 많은 단내가 겹쳐지는 화사한 플로럴 프루티 부케',
+ dry:'화이트 머스크가 피부에 밀착하며 남기는 포근하고 클린한 스킨 시밀레, 강하지 않은 확산력으로 하루 내내 잔잔히 이어지는 잔향',
  similar:'밤쉘 · 샤넬 샹스',badges:['데일리 최적','선물 인기'],
  t:{fl:3,fr:2,mu:1},sw:2,cl:2,pr:1,ni:0,use:{d:3,o:1,g:3},se:['봄','여름','가을','겨울']},
 {name:'로즈 뮤스크',line:'시그니처',store:null,fam:'플로럴 파우더리',
  notes:['불가리안 로즈','바이올렛','화이트 머스크'],
- top:'생화 같은 로즈의 고혹적인 첫인상',
- mid:'불가리안 로즈와 바이올렛·아이리스가 어우러진 깊이 있는 꽃의 향연',
- dry:'오래 머무는 화이트 머스크의 부드러운 잔향',
+ top:'생화를 그대로 옮겨온 듯 진한 불가리안 로즈 앱솔루트가 터지는 고혹적인 첫 확산',
+ mid:'바이올렛 잎과 아이리스 파우더가 로즈의 결을 한층 섬세하게 감싸며 깊어지는 벨벳 같은 플로럴 하트',
+ dry:'화이트 머스크가 로즈의 잔영을 오래 붙잡아 두는, 은은하고 포근한 스킨 클로즈 잔향',
  similar:'딥디크 오 로즈',badges:['고급 로즈 대표','선물 최적'],
  t:{fl:3,pw:2,mu:1},sw:1,cl:1,pr:3,ni:1,use:{d:1,o:3,g:3},se:['봄','여름','가을','겨울']},
 {name:'상탈 누와',line:'시그니처',store:null,fam:'우디 아로마틱',
  notes:['프레쉬 허브','샌달우드','베티버'],
- top:'신선한 허브의 상쾌한 첫인상',
- mid:'샌달우드의 차분한 우디에 베티버의 은은한 흙내음이 더해진 깊이',
- dry:'따뜻하고 부드러운 샌달우드의 긴 잔향',
+ top:'로즈마리·타임 계열의 프레쉬 허브가 알코올과 함께 산뜻하게 퍼지는 그린 아로마틱 첫인상',
+ mid:'허브의 청량감이 가라앉으며 마이소르 샌달우드 특유의 크리미한 목질감이 서서히 올라오는 전환의 하트',
+ dry:'베티버의 흙내음과 샌달우드의 밀키한 온기가 뒤엉켜 오래 남는, 깊고 따뜻한 우디 잔향',
  similar:'르라보 상탈',badges:['니치 무드','남녀 모두'],
  t:{wd:3,ci:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:2},se:['가을','겨울']},
 {name:'오드 쟈뎅',line:'시그니처',store:null,fam:'프레쉬 우디 프루티',
  notes:['달콤한 배','무화과','시더우드'],
- top:'비 온 뒤 싱그러운 정원의 청량한 첫인상',
- mid:'달콤한 배와 무화과가 시더우드로 자연스럽게 이어지는 클린 무드',
- dry:'시더우드의 맑고 가벼운 우디 잔향',
+ top:'비 갠 정원의 젖은 잎사귀처럼 청량한 배 노트가 톡 터지는 그린 프루티 첫인상',
+ mid:'무화과 잎의 밀키한 그린감이 배의 과즙과 섞이며 만드는 자연스럽고 클린한 하트',
+ dry:'버지니아 시더우드의 맑고 드라이한 결이 잔잔하게 이어지는, 가볍고 클린한 우디 잔향',
  similar:'에르메스 운 자르뎅',badges:['클린 데일리','유니섹스'],
  t:{ci:2,fr:2,wd:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을']},
 {name:'퓨어 모브',line:'시그니처',store:null,fam:'파우더리 플로럴 머스크',
  notes:['미모사','바이올렛','헬리오트로프'],
- top:'포근하고 부드러운 파우더리 첫인상',
- mid:'미모사와 무화과·헬리오트로프의 밸런스 잡힌 포근한 플로럴',
- dry:'머스크의 따뜻하고 부드러운 잔향',
+ top:'미모사 특유의 노랗고 포근한 꽃가루 향이 부드럽게 번지는 파우더리 첫 확산',
+ mid:'바이올렛과 헬리오트로프가 아몬드빛 스위트함을 더하며 밸런스 잡힌 포근한 플로럴 하트로 이어짐',
+ dry:'머스크가 파우더 입자처럼 얇게 피부에 내려앉는, 따뜻하고 보들한 잔향',
  similar:'딥디크 필로시코스',badges:['파우더리','유니섹스'],
  t:{pw:3,fl:2,mu:2},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:1},se:['봄','가을','겨울']},
 {name:'오드 블론드',line:'시그니처',store:null,fam:'우디 레더 인센스',
  notes:['소프트 레더','인센스','블론드 우드'],
- top:'소프트 레더의 딥하고 세련된 첫인상',
- mid:'인센스의 신비로운 연기와 블론드 우드의 따뜻한 무게감',
- dry:'고급스럽고 묵직한 블론드 우드의 잔향',
+ top:'무두질한 스웨이드 특유의 그을린 듯한 향이 인센스 연기와 함께 낮게 퍼지는 딥한 첫인상',
+ mid:'올리바눔의 신비로운 훈연감이 레더의 결을 감싸며 서서히 무게중심을 낮추는 전환',
+ dry:'블론드 우드가 레더와 인센스를 하나로 묶어 남기는, 고급스럽고 묵직한 앰버빛 잔향',
  similar:null,badges:['딥 우디','시그니처 향'],
  t:{wd:3,le:3,in:2},sw:0,cl:0,pr:3,ni:2,use:{d:0,o:3,g:3},se:['가을','겨울']},
 {name:'베티베르',line:'시그니처',store:null,fam:'어쓰 우디 시트러스',
  notes:['베티버','로즈','오크모스'],
- top:'시트러스와 로즈의 상쾌한 첫인상',
- mid:'베티버의 신선하고 얼씨한 질감에 로즈가 어우러진 니치 무드',
- dry:'오크모스의 자연적이고 깊은 우디 잔향',
+ top:'자몽·베르가못 계열 시트러스가 밝게 터지며 로즈의 그린한 결을 함께 끌어올리는 첫인상',
+ mid:'베티버 특유의 얼씨하고 뿌리 깊은 흙내음이 로즈와 뒤섞이며 니치한 무드로 전환되는 하트',
+ dry:'오크모스의 이끼향과 베티버의 잔뿌리 같은 질감이 오래도록 가라앉는 자연적인 우디 잔향',
  similar:'바이레도 집시워터',badges:['니치 무드','오래 지속'],
  t:{wd:3,ci:1,fl:1},sw:0,cl:1,pr:2,ni:3,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
 {name:'르 바캉스',line:'시그니처',store:null,fam:'스위트 프루티 시트러스',
  notes:['만다린','망고','블랙 커런트'],
- top:'달콤한 망고와 만다린의 기분 좋은 첫인상',
- mid:'무르익은 과일이 어우러진 파우더리한 프루티 무드',
- dry:'달콤하고 시트러스한 부드러운 잔향',
+ top:'만다린 껍질을 짓눌러 낸 듯 상큼하고 즙 많은 첫 확산',
+ mid:'무르익은 망고와 블랙 커런트가 겹쳐지며 파우더리한 잔당감으로 부드러워지는 프루티 하트',
+ dry:'시트러스의 산뜻함이 옅은 머스크 위에 남아 달콤하면서도 가볍게 마무리되는 잔향',
  similar:null,badges:['선물 1순위','전 연령'],
  t:{fr:3,ci:2,gm:1},sw:3,cl:0,pr:2,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
 {name:'버가우드',line:'시그니처',store:null,fam:'시트러스 우디 스파이시',
  notes:['베르가못','아가우드','패출리'],
- top:'베르가못·레몬의 밝고 상쾌한 첫인상',
- mid:'아가우드의 차분하고 신비로운 우디함에 패출리가 더하는 깊이',
- dry:'피부 위에서 나만의 향으로 변화하는 시그니처 잔향',
+ top:'캘러브리아 베르가못과 레몬 제스트가 밝고 씁쓸달콤하게 퍼지는 첫인상',
+ mid:'시트러스가 가라앉으며 아가우드 특유의 스모키하고 신비로운 목질감이 서서히 드러나는 전환',
+ dry:'패출리의 흙내음이 아가우드를 붙잡아 두며, 피부 위에서 저마다 다르게 완성되는 시그니처 잔향',
  similar:'톰포드 오드우드',badges:['개성 시그니처','유니섹스'],
  t:{ci:2,wd:3,sp:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:1},se:['가을','겨울']},
 {name:'페슈 무아',line:'시그니처',store:null,fam:'소프트 프루티 플로럴',
  notes:['옐로우 피치','화이트 로즈','알데하이드'],
- top:'알데하이드의 맑고 깨끗한 첫인상',
- mid:'옐로우 피치와 화이트 로즈의 달콤하고 소프트한 플로럴',
- dry:'클린하고 밝은 알데하이드의 잔향',
+ top:'알데하이드 특유의 비누 같은 투명함이 맑게 퍼지는 클린한 첫 확산',
+ mid:'옐로우 피치의 보숭보숭한 과즙감이 화이트 로즈와 겹쳐지며 만드는 달콤하고 소프트한 플로럴 하트',
+ dry:'알데하이드의 밝은 잔영이 은은한 머스크 위에 남아 클린하고 화사하게 마무리되는 잔향',
  similar:null,badges:['복숭아 1순위','선물 인기'],
  t:{fr:3,fl:2},sw:2,cl:2,pr:1,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
 {name:'솔레이 누드',line:'시그니처',store:null,fam:'플로럴 오리엔탈',
  notes:['오렌지 블로썸','일랑일랑','바닐라'],
- top:'오렌지 블로썸의 달콤하고 관능적인 첫인상',
- mid:'일랑일랑·자스민의 관능적인 플로럴과 바닐라의 따스함',
- dry:'바닐라와 우디의 관능적이고 따뜻한 잔향',
+ top:'오렌지 블로썸의 달콤하고 관능적인 시트러스 플로럴이 짙게 퍼지는 첫인상',
+ mid:'일랑일랑과 자스민이 크리미한 트로피컬 플로럴로 확장되며 존재감을 더하는 하트',
+ dry:'바닐라와 통카빈이 우디 머스크와 함께 남기는, 따뜻하고 관능적인 오리엔탈 잔향',
  similar:'샤넬 NO.5',badges:['고급 외출 향','클래식'],
  t:{fl:3,gm:1},sw:2,cl:0,pr:3,ni:1,use:{d:0,o:3,g:2},se:['봄','가을','겨울']},
 {name:'시트론',line:'시그니처',store:null,fam:'시트러스 아로마틱',
  notes:['싱그러운 오렌지','바질','패출리'],
- top:'오렌지·만다린 껍질이 터지는 씁쓸달콤한 첫인상',
- mid:'오렌지와 바질의 프레쉬하고 활기찬 시트러스 무드',
- dry:'패출리의 미세한 어쓰 노트가 감각적으로 마무리하는 잔향',
+ top:'오렌지·만다린 껍질을 벗기는 순간처럼 씁쓸달콤하게 터지는 시트러스 첫 확산',
+ mid:'바질 잎의 그린하고 알싸한 아로마틱함이 시트러스를 산뜻하게 지탱하는 활기찬 하트',
+ dry:'패출리의 미세한 흙내음이 시트러스의 잔영 위로 감각적으로 내려앉는 잔향',
  similar:'조말론 라임 바질 앤 만다린',badges:['여름 1순위','유니섹스'],
  t:{ci:3},sw:1,cl:2,pr:1,ni:0,use:{d:3,o:2,g:1},se:['봄','여름']},
 {name:'영 로즈',line:'플라워',store:null,fam:'플로럴 스파이시',
  notes:['로즈 앱솔루트','핑크 페퍼','베티버'],
- top:'만다린과 핑크 페퍼의 신선하고 생기 있는 첫인상',
- mid:'스위트한 로즈 앱솔루트에 핑크 페퍼가 불어넣는 생동감',
- dry:'베티버의 신선하고 자연스러운 잔향',
+ top:'만다린과 핑크 페퍼가 알싸하고 생기 있게 톡 쏘는 스파클링한 첫인상',
+ mid:'로즈 앱솔루트가 스위트하게 피어나며 핑크 페퍼의 잔잔한 자극과 대비를 이루는 하트',
+ dry:'베티버의 신선하고 자연스러운 목질감이 로즈의 잔향을 가볍게 붙잡아 두는 잔향',
  similar:null,badges:['생동감 로즈','전 연령'],
  t:{fl:3,sp:1},sw:1,cl:1,pr:2,ni:1,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
 {name:'프리지아 듀',line:'플라워',store:null,fam:'프레쉬 플로럴',
  notes:['프리지아','투명한 뮤게','풋사과'],
- top:'풋사과의 상큼하고 달콤한 첫인상',
- mid:'맑은 뮤게와 프리지아가 그리는 청초한 꽃다발',
- dry:'깨끗하고 가벼운 플로럴 잔향',
+ top:'이슬 맺힌 풋사과처럼 상큼하고 청량한 그린 프루티 첫 확산',
+ mid:'프리지아와 뮤게(은방울꽃)가 투명하게 겹쳐지며 만드는 맑고 청초한 플로럴 부케',
+ dry:'화이트 머스크 위로 남는 가볍고 깨끗한 플로럴 잔향, 부담 없이 스치듯 이어짐',
  similar:'산타마리아 노벨라 프리지아',badges:['청초함','20대 인기'],
  t:{fl:3,fr:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을','겨울']},
 {name:'베일 드 뉘',line:'플라워',store:null,fam:'플로럴 머스키 알데하이드',
  notes:['알데하이드','바이올렛','머스크'],
- top:'알데하이드의 포근하고 섬세한 첫인상',
- mid:'바이올렛과 머스크가 어우러진 베이스 잔향 같은 부드러움',
- dry:'머스크의 따뜻하고 오래가는 잔향',
+ top:'알데하이드 특유의 비누 같은 투명함이 포근하게 번지는 섬세한 첫인상',
+ mid:'바이올렛의 파우더리함이 머스크와 미리 만나 하트와 베이스의 경계를 지우는 부드러운 전환',
+ dry:'머스크가 피부 결을 따라 오래도록 은은하게 남는, 따뜻하고 지속력 강한 잔향',
  similar:null,badges:['긴 잔향','다용도'],
  t:{mu:3,pw:2,fl:1},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
 {name:'메이 아이 파이브',line:'플라워',store:null,fam:'아로마틱 플로럴',
  notes:['라일락','유칼립투스','암브레트'],
- top:'유칼립투스의 신선하고 허브적인 첫인상',
- mid:'깨끗한 라일락 플로럴과 유칼립투스의 상쾌한 조화',
- dry:'암브레트의 편안하고 부담 없는 잔향',
+ top:'유칼립투스의 시원하고 멘솔릭한 아로마틱함이 산뜻하게 퍼지는 첫인상',
+ mid:'라일락의 깨끗한 플로럴이 유칼립투스와 균형을 이루며 상쾌함을 이어가는 하트',
+ dry:'암브레트 머스크가 가볍게 내려앉아, 부담 없이 편안하게 마무리되는 잔향',
  similar:null,badges:['프레쉬 아로마','편안한 착용감'],
  t:{fl:2,ci:1},sw:0,cl:2,pr:1,ni:1,use:{d:3,o:2,g:0},se:['봄','여름','가을']},
 {name:'아이보리 뉘',line:'플라워',store:null,fam:'플로럴 스파이시 머스키',
  notes:['튜베로즈','핑크 페퍼','화이트 머스크'],
- top:'핑크 페퍼의 스파이시하고 독특한 첫인상',
- mid:'튜베로즈와 무화과가 만난 독특하면서 맑은 플로럴',
- dry:'화이트 머스크의 깊고 매력적인 잔향',
+ top:'핑크 페퍼의 알싸하고 스파클링한 자극이 톡 쏘듯 퍼지는 독특한 첫인상',
+ mid:'튜베로즈 특유의 짙고 크리미한 플로럴이 무화과 잎의 그린함과 만나 관능적으로 피어나는 하트',
+ dry:'화이트 머스크가 튜베로즈의 여운을 부드럽게 감싸 안는, 깊고 매력적인 잔향',
  similar:'딥디크 도손',badges:['독특한 플로럴','매력적 잔향'],
  t:{fl:2,sp:2,mu:2},sw:1,cl:1,pr:2,ni:2,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
 {name:'자스민 퀴레',line:'플라워',store:null,fam:'플로럴 레더',
  notes:['자스민','일랑일랑','레더'],
- top:'화이트 자스민의 깨끗하고 우아한 첫인상',
- mid:'깨끗한 자스민을 부드럽게 감싸는 레더의 균형',
- dry:'레더·앰버의 세련되고 고급스러운 잔향',
+ top:'인돌 함량이 낮게 정제된 화이트 자스민이 맑고 우아하게 퍼지는 첫인상',
+ mid:'일랑일랑의 크리미함이 자스민을 감싸며, 무두질된 레더가 서서히 무게를 더하는 전환',
+ dry:'레더와 앰버가 자스민의 잔영을 세련되게 붙잡아 두는, 남녀 모두에게 어울리는 잔향',
  similar:null,badges:['레더 플로럴','남녀 공용'],
  t:{fl:2,le:2},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:3,g:0},se:['봄','가을','겨울']},
 {name:'더스키 플레르',line:'플라워',store:null,fam:'프루티 플로럴 앰버',
  notes:['오스만투스','도넛 복숭아','앰버'],
- top:'도넛 피치와 토바코의 독특하고 매력적인 첫인상',
- mid:'짙고 달콤한 오스만투스에 프루티 노트가 가득한 니치 무드',
- dry:'앰버의 포근하고 따뜻한 잔향',
+ top:'도넛 피치의 달큰함과 은은한 토바코 잎이 함께 퍼지는 독특하고 매력적인 첫인상',
+ mid:'오스만투스 특유의 짙고 살구빛 플로럴이 프루티 노트와 뒤엉키며 니치한 밀도로 짙어지는 하트',
+ dry:'앰버의 레진 같은 온기가 오스만투스의 잔향을 포근하게 감싸는, 길고 따뜻한 잔향',
  similar:null,badges:['니치 무드','앰버 잔향'],
  t:{fr:2,fl:2,gm:1},sw:2,cl:0,pr:2,ni:3,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
 {name:'아벤쿠아 25',en:'AVENQUA 25',line:'익스클루시브',store:'광안',fam:'아쿠아틱 플로럴',
  story:'광안리 바다를 담은 향 — 숫자 \'25\'는 센티카 광안의 주소에서 왔습니다.',
  notes:['아쿠아틱 어코드','로투스','화이트 머스크'],
- top:'시원한 바닷바람 같은 아쿠아틱 첫인상',
- mid:'로투스와 화이트 머스크의 깨끗하고 부드러운 플로럴',
- dry:'화이트 머스크의 클린하고 지속적인 잔향',
+ top:'부서지는 파도의 오존 향과 짠내를 머금은 시원한 아쿠아틱 어코드가 퍼지는 첫인상',
+ mid:'로투스(연꽃)의 맑고 투명한 플로럴이 아쿠아틱함 위로 부드럽게 피어나는 하트',
+ dry:'화이트 머스크가 바다 내음을 클린하게 정리해 오래 남기는, 산뜻하고 지속력 있는 잔향',
  similar:null,badges:['광안 단독','바다 무드'],
  t:{aq:3,ci:1,mu:1},sw:0,cl:3,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름']},
 {name:'브뤼떼 12',en:'BRUTEA 12',line:'익스클루시브',store:'전포',fam:'구르망 우디 앰버',
  story:'전포 카페거리를 담은 향 — 숫자 \'12\'는 센티카 전포의 주소에서 왔습니다.',
  notes:['커피','통카빈','벤조인'],
- top:'커피와 바닐라의 달콤하고 포근한 첫인상',
- mid:'통카빈과 벤조인의 따뜻하고 부드러운 구르망 무드',
- dry:'벤조인의 따뜻하고 달콤한 잔향',
+ top:'갓 로스팅한 원두의 쌉싸름하고 진한 커피 향이 바닐라빛 단내와 함께 퍼지는 첫인상',
+ mid:'통카빈의 건초 같은 달콤함이 커피의 씁쓸함과 균형을 이루며 부드러워지는 구르망 하트',
+ dry:'벤조인의 레진감이 따뜻하게 굳어지며 남기는, 포근하고 달콤한 잔향',
  similar:null,badges:['전포 단독','커피 컨셉'],
  t:{gm:3,wd:1},sw:3,cl:0,pr:2,ni:2,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
 {name:'잉크하이브 21',en:'INKHIVE 21',line:'익스클루시브',store:'소격',fam:'인센스 우디 스모키',
  story:'소격동 한옥 서가, 벼루 위 먹을 가는 순간을 담은 향 — 숫자 \'21\'은 센티카 소격의 주소에서 왔습니다.',
  notes:['올리바눔','먹 (墨)','패출리'],
- top:'알싸한 블랙 페퍼와 훈연된 올리바눔 — 묵이 피어오르는 첫인상',
- mid:'씁쓸한 훈연이 시더우드·샌달우드와 어우러지는 깊고 지적인 우디',
- dry:'오래된 서가에 고인 먹향처럼 길게 머무는 샌달우드',
+ top:'블랙 페퍼의 알싸함과 훈연된 올리바눔 연기가 벼루 위 먹을 가는 순간처럼 피어오르는 첫인상',
+ mid:'훈연의 씁쓸함이 잦아들며 시더우드와 샌달우드의 결 고운 목질감이 서서히 짙어지는 지적인 하트',
+ dry:'오래된 서가에 고인 먹향처럼, 크리미한 샌달우드가 밀도 있게 오래 머무는 잔향',
  similar:null,badges:['소격 단독','한국적 인센스'],
  t:{in:3,wd:3},sw:0,cl:0,pr:3,ni:3,use:{d:1,o:2,g:2},se:['가을','겨울']},
 {name:'베이지 70',en:'BEIJI 70',line:'익스클루시브',store:'소격',fam:'파우더리 스킨 머스크',
  story:'한옥 창살 사이 햇살과 따스한 한지의 색감을 담은 향 — 숫자 \'70\'은 센티카 소격의 주소에서 왔습니다.',
  notes:['쌀','암브레트','머스크'],
- top:'맑고 고소한 쌀과 부드러운 우유의 투명한 첫인상',
- mid:'암브레트와 머스크가 포근하게 감싸는 한옥 마루의 고요한 온기',
- dry:'제2의 피부처럼 정착하는 살결 같은 머스크 잔향',
+ top:'갓 지은 쌀밥의 고소하고 맑은 김이 우유 거품처럼 부드럽게 번지는 투명한 첫인상',
+ mid:'암브레트가 사향빛 온기를 더하며 한옥 마루의 볕처럼 고요하게 데워지는 파우더리 하트',
+ dry:'머스크가 제2의 피부처럼 정착해, 살결 그 자체처럼 오래 남는 스킨 시밀레 잔향',
  similar:null,badges:['소격 단독','스킨 머스크'],
  t:{mu:3,pw:2},sw:1,cl:2,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
 {name:'샤플렛 54',en:'SAFLEAT 54',line:'익스클루시브',store:'한남',fam:'레더 우디 플로럴',
  story:'한남동의 세련된 건축과 편집숍 거리를 담은 향 — 숫자 \'54\'는 센티카 한남의 주소에서 왔습니다.',
  notes:['샤프란','미모사','스웨이드'],
- top:'이국적인 샤프란과 미모사의 노란빛 온기가 퍼지는 첫인상',
- mid:'벨벳 같은 스웨이드 위로 미모사 플로럴이 스며드는 감각적인 레더',
- dry:'피부 위에 오래 머무는 스타일리시한 스웨이드 잔향',
+ top:'이국적인 샤프란의 가죽 같은 스파이시함과 미모사의 노란 온기가 함께 퍼지는 첫인상',
+ mid:'벨벳처럼 부드러운 스웨이드 위로 미모사 플로럴이 스며들며 감각적으로 짙어지는 레더 하트',
+ dry:'우디가 스웨이드의 결을 단단히 잡아주며 피부 위에 오래 남는, 스타일리시한 잔향',
  similar:null,badges:['한남 단독','플로럴 레더'],
  t:{le:2,fl:2,sp:1,wd:1},sw:1,cl:0,pr:2,ni:2,use:{d:1,o:2,g:3},se:['봄','가을','겨울']}
 ];
@@ -469,6 +490,7 @@ const MOODS={
   fresh:['#EDEDED','#F8F8F8'], aqua:['#E6E6E6','#F5F5F5'], incense:['#DFDFDF','#EFEFEF'],
   musk:['#EAEAEA','#F6F6F6'], gourmand:['#E2E2E2','#F1F1F1'], floral:['#F0F0F0','#F9F9F9'],
   fruity:['#EBEBEB','#F7F7F7'], citrus:['#F1F1F1','#FAFAFA'], woody:['#DCDCDC','#EEEEEE'],
+  party:['#E8DED6','#F5EFEA'], spicy:['#E4DAD0','#F3ECE5'],
   def:['#EFEFEF','#F8F8F8']
 };
 function setMood(m){
@@ -482,7 +504,8 @@ const QUESTIONS=[
 {title:'오늘, 향수를 찾는 이유는?',sub:'가장 가까운 하나를 골라주세요',cls:'single',opts:[
   {i:'🌿',l:'나의 데일리 향',s:'매일 곁에 두고 싶은 부담 없는 향',fx:p=>p.use.d*2},
   {i:'✨',l:'특별한 날의 향',s:'모임과 외출, 인상을 남기고 싶은 순간',fx:p=>p.use.o*2},
-  {i:'🎁',l:'소중한 사람의 선물',s:'마음을 대신 전할 한 병',fx:p=>p.use.g*2}
+  {i:'🎁',l:'소중한 사람의 선물',s:'마음을 대신 전할 한 병',fx:p=>p.use.g*2},
+  {i:'🔄',l:'기분 전환이 필요한 순간',s:'지친 하루에 산뜻한 리프레시가 되어줄 향',fx:p=>g(p,'ci')*1.2+g(p,'aq')*1.2+g(p,'fr')*1.2}
 ]},
 {title:'눈을 감으면, 어디에 머물고 싶나요?',sub:'끌리는 장면 하나를 골라주세요',cls:'grid3',opts:[
   {i:'🌧️',l:'비 갠 아침의 정원',s:'싱그러운 풀내음과 맑은 공기',mood:'fresh',fx:p=>g(p,'ci')*1.5+p.cl*1.5},
@@ -490,19 +513,22 @@ const QUESTIONS=[
   {i:'📖',l:'오래된 서재',s:'책장 사이 먹과 나무의 내음',mood:'incense',fx:p=>g(p,'in')*2+g(p,'wd')*1.5},
   {i:'🧶',l:'포근한 니트의 품',s:'살결에 스미는 따뜻한 온기',mood:'musk',fx:p=>g(p,'mu')*2+g(p,'pw')*1.5},
   {i:'☕',l:'오후의 카페',s:'갓 내린 커피와 달콤한 디저트',mood:'gourmand',fx:p=>g(p,'gm')*2.5+p.sw*.5},
-  {i:'💐',l:'만개한 꽃집',s:'가득 안긴 꽃다발의 향연',mood:'floral',fx:p=>g(p,'fl')*2}
+  {i:'💐',l:'만개한 꽃집',s:'가득 안긴 꽃다발의 향연',mood:'floral',fx:p=>g(p,'fl')*2},
+  {i:'🎉',l:'사람 북적이는 파티의 밤',s:'화려하고 생기 넘치는 사교의 순간',mood:'party',fx:p=>p.pr*1.3+g(p,'sp')*1.3+g(p,'le')*1}
 ]},
 {title:'첫 만남, 어떤 인상에 끌리나요?',sub:'향수의 첫 향, 탑 노트의 취향입니다',opts:[
   {i:'🍋',l:'톡 터지는 상큼함',s:'시트러스의 밝은 에너지',mood:'citrus',fx:p=>g(p,'ci')*1.5},
   {i:'🍑',l:'무르익은 과일의 달콤함',s:'복숭아·망고 같은 프루티',mood:'fruity',fx:p=>g(p,'fr')*1.5},
   {i:'🌸',l:'화사하게 피어나는 꽃',s:'로즈·피오니 같은 플로럴',mood:'floral',fx:p=>g(p,'fl')*1.5},
   {i:'🫧',l:'갓 세탁한 듯한 깨끗함',s:'비누처럼 맑고 클린한 향',mood:'musk',fx:p=>p.cl*1.5+g(p,'mu')*.5},
-  {i:'🪵',l:'차분히 가라앉는 나무',s:'우디의 안정감 있는 무게',mood:'woody',fx:p=>g(p,'wd')*1.5}
+  {i:'🪵',l:'차분히 가라앉는 나무',s:'우디의 안정감 있는 무게',mood:'woody',fx:p=>g(p,'wd')*1.5},
+  {i:'🥃',l:'묵직하게 다가오는 무게감',s:'스파이시·앰버 같은 적당한 존재감',mood:'spicy',fx:p=>g(p,'sp')*1.5+p.pr*.7}
 ]},
 {title:'달콤함은, 어느 정도가 좋나요?',sub:'',cls:'single',opts:[
   {i:'🍯',l:'충분히 달콤하게',s:'기분 좋아지는 스위트함이 좋아요',fx:p=>(3-Math.abs(3-p.sw))*1.5},
   {i:'🌙',l:'은은하게 스치듯',s:'달콤함은 살짝만 느껴지면 충분해요',fx:p=>(3-Math.abs(1.5-p.sw))*1.5},
-  {i:'🍃',l:'달지 않게, 담백하게',s:'클린하거나 드라이한 쪽이 좋아요',fx:p=>(3-p.sw)*1.5}
+  {i:'🍃',l:'달지 않게, 담백하게',s:'클린하거나 드라이한 쪽이 좋아요',fx:p=>(3-p.sw)*1.5},
+  {i:'🍫',l:'묵직하고 진하게 달콤하게',s:'오리엔탈·구르망처럼 짙은 단맛이 좋아요',fx:p=>(3-Math.abs(3-p.sw))*1+p.pr*1.2}
 ]},
 {title:'향의 존재감은 어떠면 좋을까요?',sub:'',cls:'single',opts:[
   {i:'🕊️',l:'살결처럼 은은하게',s:'스치듯 가까이에서만 느껴지도록',fx:p=>(3-Math.abs(1-p.pr))*2},
@@ -515,9 +541,9 @@ const QUESTIONS=[
   {i:'🖤',l:'향을 수집하는 편',s:'남들과 다른 특별한 향을 찾아요',fx:p=>p.ni*1.5}
 ]},
 {title:'이 향, 언제 곁에 두고 싶나요?',sub:'',cls:'single',opts:[
-  {i:'🌸',l:'봄과 여름',s:'가볍고 산뜻한 계절의 향',fx:p=>(p.se.includes('봄')+p.se.includes('여름'))*2},
-  {i:'🍂',l:'가을과 겨울',s:'깊고 따뜻한 계절의 향',fx:p=>(p.se.includes('가을')+p.se.includes('겨울'))*2},
-  {i:'♾️',l:'사계절 내내',s:'계절을 타지 않는 나만의 향',fx:p=>p.se.length===4?4:p.se.length===3?2:0}
+  {i:'🌸',l:'봄과 여름',s:'가볍고 산뜻한 계절의 향',fx:p=>(p.se.includes('봄')+p.se.includes('여름'))*1},
+  {i:'🍂',l:'가을과 겨울',s:'깊고 따뜻한 계절의 향',fx:p=>(p.se.includes('가을')+p.se.includes('겨울'))*1},
+  {i:'♾️',l:'사계절 내내',s:'계절을 타지 않는 나만의 향',fx:p=>p.se.length===4?2:p.se.length===3?1:0}
 ]}
 ];
 
@@ -600,17 +626,36 @@ function compute(){
   const scored=pool.map(p=>{
     let s=0;
     QUESTIONS.forEach((q,i)=>{ s+=q.opts[answers[i]].fx(p); });
-    if(p.store&&p.store===store)s+=3;
+    if(p.store&&p.store===store)s+=1.5;
     return {p,s};
   });
-  scored.sort((a,b)=>b.s-a.s);
+  const picks=weightedPick(scored,3);
   const allS=scored.map(x=>x.s);
-  return {picks:scored.slice(0,3),minS:Math.min(...allS),maxS:Math.max(...allS)};
+  return {picks,minS:Math.min(...allS),maxS:Math.max(...allS)};
+}
+
+/* 근소한 차이의 향수들 사이에 매번 같은 결과만 나오지 않도록,
+   점수를 가중치로 한 복원 없는 추첨으로 top3를 뽑는다 (점수가 높을수록 뽑힐 확률이 높음) */
+function weightedPick(scored,k){
+  const pool=scored.slice();
+  const picks=[];
+  const TEMP=3;
+  for(let n=0;n<k&&pool.length;n++){
+    const maxS=Math.max(...pool.map(x=>x.s));
+    const weights=pool.map(x=>Math.exp((x.s-maxS)/TEMP));
+    const total=weights.reduce((a,b)=>a+b,0);
+    let r=Math.random()*total, idx=0;
+    for(;idx<weights.length-1;idx++){ r-=weights[idx]; if(r<=0)break; }
+    picks.push(pool[idx]);
+    pool.splice(idx,1);
+  }
+  picks.sort((a,b)=>b.s-a.s);
+  return picks;
 }
 
 /* ---------- 결과 ---------- */
 const RANKS=['베스트 매치','두 번째 향','세 번째 향'];
-const FAM_MOOD=[['aq','aqua'],['in','incense'],['gm','gourmand'],['le','woody'],['wd','woody'],['mu','musk'],['pw','musk'],['fr','fruity'],['ci','citrus'],['fl','floral']];
+const FAM_MOOD=[['aq','aqua'],['in','incense'],['gm','gourmand'],['sp','spicy'],['le','woody'],['wd','woody'],['mu','musk'],['pw','musk'],['fr','fruity'],['ci','citrus'],['fl','floral']];
 /* 매치율은 top3 사이의 상대 비율이 아니라, 이번 설문에서 나온 전체 후보군의
    점수 분포(minS~maxS) 안에서 각 향이 어디에 위치하는지로 계산한다(78~98%).
    순위는 어디까지나 추천 "순서"일 뿐 절대적 우열이 아니므로, 실제 점수가
