@@ -289,6 +289,7 @@ body{
 .gc-tag{font-size:12px;letter-spacing:.24em;color:var(--accent);text-indent:.24em;font-weight:600;margin-bottom:10px}
 .gc-label{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:12px}
 .gc-desc{font-size:15px;color:var(--ink2);line-height:1.65;font-weight:300}
+.gc-time{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);letter-spacing:.04em}
 
 /* ---------- confetti ---------- */
 .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
@@ -386,6 +387,12 @@ body{
       <div class="r-eyebrow">LUCKY DRAW</div>
       <h2 class="r-title">행운의 캡슐 뽑기</h2>
       <p class="r-sub" id="gcSub">버튼을 눌러 캡슐을 뽑고, 오늘의 등수를 확인해보세요</p>
+    </div>
+
+    <div class="r-notice" id="gLockNotice" style="display:none">
+      <span class="notice-badge">TODAY'S LIMIT</span>
+      <strong class="notice-title">오늘은 이미 참여하셨습니다</strong>
+      <span class="notice-sub" id="gLockSub">가챠 이벤트는 하루에 한 번만 참여할 수 있어요. 내일 다시 도전해주세요!</span>
     </div>
 
     <div class="gacha-stage">
@@ -728,6 +735,43 @@ const GACHA=[
  cheer:'✨ 참여해주셔서 감사합니다!',emojis:['✨'],confetti:{count:10,dist:90,dur:1100}}
 ];
 const SUSPENSE_MSGS=['행운의 캡슐을 고르는 중...','두근두근, 캡슐이 움직입니다...','곧 캡슐이 나옵니다...'];
+const GACHA_LOCK_KEY='scentica_gacha_lock';
+function todayStr(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function nowStamp(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function getGachaLock(){
+  try{
+    const raw=localStorage.getItem(GACHA_LOCK_KEY);
+    if(!raw)return null;
+    const data=JSON.parse(raw);
+    return data.date===todayStr()?data:null;
+  }catch(e){ return null; }
+}
+function setGachaLock(rank,stamp){
+  try{ localStorage.setItem(GACHA_LOCK_KEY,JSON.stringify({date:todayStr(),rank,stamp})); }catch(e){}
+}
+function applyGachaLock(){
+  const lock=getGachaLock();
+  const notice=$('gLockNotice'), pull=$('btnPull');
+  if(lock){
+    const gg=GACHA.find(x=>x.rank===lock.rank);
+    const stampLabel=lock.stamp?`${lock.stamp} 뽑음 · `:'';
+    $('gLockSub').textContent=`${stampLabel}당첨: ${lock.rank}등${gg?' · '+gg.desc:''} · 가챠 이벤트는 하루에 한 번만 참여할 수 있어요. 내일 다시 도전해주세요!`;
+    notice.style.display='';
+    pull.disabled=true; pull.textContent='오늘의 참여 완료';
+    gachaDrawn=true;
+  }else{
+    notice.style.display='none';
+    pull.textContent='캡슐 뽑기';
+    if(!gachaBusy){ pull.disabled=false; gachaDrawn=false; }
+  }
+}
 function burstConfetti(g){
   const layer=$('confettiLayer'); layer.innerHTML='';
   const {count,dist,dur}=g.confetti;
@@ -777,7 +821,7 @@ function fillDome(){
 }
 let gachaDrawn=false, gachaBusy=false;
 $('btnPull').addEventListener('click',()=>{
-  if(gachaBusy||gachaDrawn)return;
+  if(gachaBusy||gachaDrawn||getGachaLock())return;
   gachaBusy=true; $('btnPull').disabled=true;
   const susp=$('gSuspense'), mach=$('machine');
   susp.textContent=SUSPENSE_MSGS[0];
@@ -809,6 +853,7 @@ function dropCapsule(){
 }
 function showGachaResult(g){
   gachaDrawn=true; gachaBusy=false;
+  const stamp=nowStamp();
   const res=$('gachaResult');
   res.style.setProperty('--flash',g.color);
   res.innerHTML=`<div class="gc-card" style="--grad:${g.grad};--gink:${g.gink}">
@@ -817,6 +862,7 @@ function showGachaResult(g){
     <div class="gc-tag">${g.tag}</div>
     <div class="gc-label">${g.label} 당첨</div>
     <div class="gc-desc">${g.desc}</div>
+    <div class="gc-time">뽑은 시각 · ${stamp}</div>
   </div>`;
   res.classList.add('show');
   let n=0;
@@ -829,12 +875,13 @@ function showGachaResult(g){
     res.classList.add('flash');
     burstConfetti(g);
     $('gcNotice').style.display='';
+    setGachaLock(g.rank,stamp);
+    applyGachaLock();
     armIdle();
   },640);
 }
 function resetGacha(){
-  gachaDrawn=false; gachaBusy=false;
-  $('btnPull').disabled=false;
+  gachaBusy=false;
   $('machine').classList.remove('shake-slow','shake');
   $('gSuspense').innerHTML='&nbsp;';
   $('capsuleSlot').innerHTML='';
@@ -842,8 +889,9 @@ function resetGacha(){
   $('gachaResult').innerHTML='';
   $('gcNotice').style.display='none';
   $('confettiLayer').innerHTML='';
+  applyGachaLock();
 }
-$('btnGachaStart').addEventListener('click',()=>{ fillDome(); show('scr-gacha'); armIdle(); });
+$('btnGachaStart').addEventListener('click',()=>{ fillDome(); applyGachaLock(); show('scr-gacha'); armIdle(); });
 $('btnGachaBack').addEventListener('click',()=>show('scr-result'));
 $('btnGachaHome').addEventListener('click',reset);
 
