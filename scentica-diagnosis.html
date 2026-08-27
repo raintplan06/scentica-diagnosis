@@ -304,10 +304,36 @@ body{
   100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1) rotate(var(--rot))}
 }
 
+/* ---------- language switch ---------- */
+.langbar{
+  position:fixed;top:calc(14px + env(safe-area-inset-top));right:16px;z-index:50;
+  display:flex;gap:6px;
+}
+.lang-btn{
+  min-height:30px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  color:var(--ink2);font-size:11px;font-family:var(--sans);letter-spacing:.06em;cursor:pointer;
+  transition:background .2s,color .2s,border-color .2s;
+}
+.lang-btn.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- psych insight ---------- */
+.psych-card{
+  width:100%;padding:26px 28px;border-radius:20px;margin-bottom:20px;flex-shrink:0;
+  background:linear-gradient(150deg,rgba(0,0,0,.055),rgba(0,0,0,.012) 60%);
+  border:1px solid var(--line);animation:rise .6s ease both;
+}
+.psych-eyebrow{font-size:11px;letter-spacing:.26em;color:var(--accent);text-indent:.26em;font-weight:600;margin-bottom:12px}
+.psych-text{font-size:15px;line-height:1.75;color:var(--ink);font-weight:300}
+.psych-text+.psych-text{margin-top:12px}
+.psych-text strong{font-weight:600;color:var(--accent)}
+
 @media (max-width:640px){
   .opts{grid-template-columns:1fr}
   .r-match{position:static;text-align:left;margin-top:10px}
   .screen{padding:0 20px calc(24px + env(safe-area-inset-bottom))}
+  .langbar{top:calc(10px + env(safe-area-inset-top));right:10px}
+  .lang-btn{padding:5px 9px;font-size:10px}
 }
 </style>
 </head>
@@ -315,16 +341,21 @@ body{
 <div class="amb" id="amb"></div>
 <div class="grain"></div>
 <div class="confetti-layer" id="confettiLayer"></div>
+<div class="langbar" id="langbar">
+  <button class="lang-btn" data-lang="ko">KOR</button>
+  <button class="lang-btn" data-lang="en">ENG</button>
+  <button class="lang-btn" data-lang="zh">中文</button>
+</div>
 
 <div class="stage">
   <div class="brand">SCENTICA</div>
 
   <!-- 인트로 -->
   <section class="screen on" id="scr-intro">
-    <div class="intro-eyebrow">PERFUME CURATION</div>
-    <h1 class="intro-title"><em>일상에 스며드는 향기</em><br>당신의 취향을 찾아드립니다</h1>
-    <p class="intro-sub">일곱 번의 터치로 취향을 읽고,<br>센티카의 향 스물네 가지 중 세 가지를 골라드립니다.</p>
-    <div class="store-label">방문하신 매장</div>
+    <div class="intro-eyebrow" id="introEyebrow">PERFUME CURATION</div>
+    <h1 class="intro-title" id="introTitle"><em>일상에 스며드는 향기</em><br>당신의 취향을 찾아드립니다</h1>
+    <p class="intro-sub" id="introSub">일곱 번의 터치로 취향을 읽고,<br>센티카의 향 스물네 가지 중 세 가지를 골라드립니다.</p>
+    <div class="store-label" id="storeLabel">방문하신 매장</div>
     <div class="stores" id="stores"></div>
     <button class="btn-start" id="btnStart">여정 시작하기</button>
   </section>
@@ -351,27 +382,28 @@ body{
   <!-- 결과 -->
   <section class="screen result-screen" id="scr-result">
     <div class="r-head">
-      <div class="r-eyebrow">YOUR CURATION</div>
-      <h2 class="r-title">당신을 위한 세 가지 향</h2>
+      <div class="r-eyebrow" id="resultEyebrow">YOUR CURATION</div>
+      <h2 class="r-title" id="resultTitle">당신을 위한 세 가지 향</h2>
       <p class="r-sub" id="rSub"></p>
     </div>
+    <div class="psych-card" id="psychCard" style="width:100%"></div>
     <div id="rCards" style="width:100%"></div>
     <div class="r-foot">
       <div class="r-notice">
-        <span class="notice-badge">PLEASE SHOW STAFF</span>
-        <strong class="notice-title">이 화면을 직원에게 보여주세요</strong>
-        <span class="notice-sub">추천드린 순서대로 시향을 도와드립니다</span>
+        <span class="notice-badge" id="rNoticeBadge">PLEASE SHOW STAFF</span>
+        <strong class="notice-title" id="rNoticeTitle">이 화면을 직원에게 보여주세요</strong>
+        <span class="notice-sub" id="rNoticeSub">추천드린 순서대로 시향을 도와드립니다</span>
       </div>
       <button class="btn-cta is-btn gacha-cta" id="btnGachaStart">
-        <span class="cta-label">🎰 가챠 뽑기 이벤트 참여하기</span>
-        <span class="cta-sub">진단 완료 기념, 캡슐 뽑고 등수 확인하기 →</span>
+        <span class="cta-label" id="gachaCtaLabel">🎰 가챠 뽑기 이벤트 참여하기</span>
+        <span class="cta-sub" id="gachaCtaSub">진단 완료 기념, 캡슐 뽑고 등수 확인하기 →</span>
       </button>
       <button class="btn-retry" id="btnRetry">처음부터 다시하기</button>
     </div>
     <div class="r-cta">
       <a class="btn-cta" href="https://scentica.co.kr/product/detail.html?product_no=74" target="_blank" rel="noopener">
-        <span class="cta-label">퍼퓸 3종 샘플 키트 무료 증정</span>
-        <span class="cta-sub">센티카 이벤트 페이지로 이동 →</span>
+        <span class="cta-label" id="ctaLabel">퍼퓸 3종 샘플 키트 무료 증정</span>
+        <span class="cta-sub" id="ctaSub">센티카 이벤트 페이지로 이동 →</span>
       </a>
     </div>
   </section>
@@ -380,18 +412,18 @@ body{
   <section class="screen result-screen" id="scr-gacha">
     <div class="q-top">
       <button class="btn-back" id="btnGachaBack">←</button>
-      <div class="q-step">GACHA EVENT</div>
+      <div class="q-step" id="gachaStep">GACHA EVENT</div>
       <div style="width:56px"></div>
     </div>
     <div class="r-head">
-      <div class="r-eyebrow">LUCKY DRAW</div>
-      <h2 class="r-title">행운의 캡슐 뽑기</h2>
+      <div class="r-eyebrow" id="gachaEyebrow">LUCKY DRAW</div>
+      <h2 class="r-title" id="gachaTitle">행운의 캡슐 뽑기</h2>
       <p class="r-sub" id="gcSub">버튼을 눌러 캡슐을 뽑고, 오늘의 등수를 확인해보세요</p>
     </div>
 
     <div class="r-notice" id="gLockNotice" style="display:none">
-      <span class="notice-badge">TODAY'S LIMIT</span>
-      <strong class="notice-title">오늘은 이미 참여하셨습니다</strong>
+      <span class="notice-badge" id="gLockBadge">TODAY'S LIMIT</span>
+      <strong class="notice-title" id="gLockTitle">오늘은 이미 참여하셨습니다</strong>
       <span class="notice-sub" id="gLockSub">가챠 이벤트는 하루에 한 번만 참여할 수 있어요. 내일 다시 도전해주세요!</span>
     </div>
 
@@ -458,9 +490,9 @@ body{
 
     <div class="r-foot">
       <div class="r-notice" id="gcNotice" style="display:none">
-        <span class="notice-badge">PLEASE SHOW STAFF</span>
-        <strong class="notice-title">이 화면을 직원에게 보여주세요</strong>
-        <span class="notice-sub">등수에 맞는 사은품을 안내드립니다</span>
+        <span class="notice-badge" id="gcNoticeBadge">PLEASE SHOW STAFF</span>
+        <strong class="notice-title" id="gcNoticeTitle">이 화면을 직원에게 보여주세요</strong>
+        <span class="notice-sub" id="gcNoticeSub">등수에 맞는 사은품을 안내드립니다</span>
       </div>
       <button class="btn-retry" id="btnGachaHome">처음부터 다시하기</button>
     </div>
@@ -468,187 +500,368 @@ body{
 </div>
 
 <script>
-/* ===================== 데이터 ===================== */
+/* ===================== 데이터 (언어 무관 스코어링) ===================== */
 /* t: 향 계열 프로필 (0~3) fl플로럴 fr프루티 ci시트러스 wd우디 mu머스크 gm구르망 le레더 in인센스 aq아쿠아틱 pw파우더리 sp스파이시
    sw 달콤함 / cl 클린함 / pr 존재감(1~3) / ni 니치성향 (0~3)
-   use: d데일리 o외출 g선물 (0~3) / se: 계절 */
+   use: d데일리 o외출 g선물 (0~3) / se: 계절
+   line/store 는 표시용이 아닌 내부 식별 코드이며, 실제 라벨은 UI.store / UI.line 맵에서 언어별로 가져온다. */
 const P=[
-{name:'플레르 에끌로',line:'시그니처',store:null,fam:'플로럴 프루티',
- notes:['피오니','애프리콧','화이트 머스크'],
+{line:'시그니처',store:null,t:{fl:3,fr:2,mu:1},sw:2,cl:2,pr:1,ni:0,use:{d:3,o:1,g:3},se:['봄','여름','가을','겨울']},
+{line:'시그니처',store:null,t:{fl:3,pw:2,mu:1},sw:1,cl:1,pr:3,ni:1,use:{d:1,o:3,g:3},se:['봄','여름','가을','겨울']},
+{line:'시그니처',store:null,t:{wd:3,ci:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:2},se:['가을','겨울']},
+{line:'시그니처',store:null,t:{ci:2,fr:2,wd:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을']},
+{line:'시그니처',store:null,t:{pw:3,fl:2,mu:2},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:1},se:['봄','가을','겨울']},
+{line:'시그니처',store:null,t:{wd:3,le:3,in:2},sw:0,cl:0,pr:3,ni:2,use:{d:0,o:3,g:3},se:['가을','겨울']},
+{line:'시그니처',store:null,t:{wd:3,ci:1,fl:1},sw:0,cl:1,pr:2,ni:3,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
+{line:'시그니처',store:null,t:{fr:3,ci:2,gm:1},sw:3,cl:0,pr:2,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
+{line:'시그니처',store:null,t:{ci:2,wd:3,sp:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:1},se:['가을','겨울']},
+{line:'시그니처',store:null,t:{fr:3,fl:2},sw:2,cl:2,pr:1,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
+{line:'시그니처',store:null,t:{fl:3,gm:1},sw:2,cl:0,pr:3,ni:1,use:{d:0,o:3,g:2},se:['봄','가을','겨울']},
+{line:'시그니처',store:null,t:{ci:3},sw:1,cl:2,pr:1,ni:0,use:{d:3,o:2,g:1},se:['봄','여름']},
+{line:'플라워',store:null,t:{fl:3,sp:1},sw:1,cl:1,pr:2,ni:1,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
+{line:'플라워',store:null,t:{fl:3,fr:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을','겨울']},
+{line:'플라워',store:null,t:{mu:3,pw:2,fl:1},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
+{line:'플라워',store:null,t:{fl:2,ci:1},sw:0,cl:2,pr:1,ni:1,use:{d:3,o:2,g:0},se:['봄','여름','가을']},
+{line:'플라워',store:null,t:{fl:2,sp:2,mu:2},sw:1,cl:1,pr:2,ni:2,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
+{line:'플라워',store:null,t:{fl:2,le:2},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:3,g:0},se:['봄','가을','겨울']},
+{line:'플라워',store:null,t:{fr:2,fl:2,gm:1},sw:2,cl:0,pr:2,ni:3,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
+{line:'익스클루시브',store:'광안',t:{aq:3,ci:1,mu:1},sw:0,cl:3,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름']},
+{line:'익스클루시브',store:'전포',t:{gm:3,wd:1},sw:3,cl:0,pr:2,ni:2,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
+{line:'익스클루시브',store:'소격',t:{in:3,wd:3},sw:0,cl:0,pr:3,ni:3,use:{d:1,o:2,g:2},se:['가을','겨울']},
+{line:'익스클루시브',store:'소격',t:{mu:3,pw:2},sw:1,cl:2,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
+{line:'익스클루시브',store:'한남',t:{le:2,fl:2,sp:1,wd:1},sw:1,cl:0,pr:2,ni:2,use:{d:1,o:2,g:3},se:['봄','가을','겨울']}
+];
+
+const g=(p,k)=>p.t[k]||0;
+
+/* ===================== 향수 표시 텍스트 (언어별) ===================== */
+/* PERFUME_TEXT[lang][i] 는 P[i]와 인덱스로 1:1 대응한다. */
+const PERFUME_TEXT={
+ko:[
+{name:'플레르 에끌로',fam:'플로럴 프루티',notes:['피오니','애프리콧','화이트 머스크'],
  top:'스파클링한 애프리콧과 만다린 잎이 과즙처럼 터지는 청량달콤한 첫 확산, 옅은 알데하이드가 밝기를 더함',
  mid:'하트로 넘어가며 피오니 앱솔루트가 벨벳 같은 질감으로 피어나고, 잘 익은 복숭아 과육의 즙 많은 단내가 겹쳐지는 화사한 플로럴 프루티 부케',
- dry:'화이트 머스크가 피부에 밀착하며 남기는 포근하고 클린한 스킨 시밀레, 강하지 않은 확산력으로 하루 내내 잔잔히 이어지는 잔향',
- similar:'밤쉘 · 샤넬 샹스',badges:['데일리 최적','선물 인기'],
- t:{fl:3,fr:2,mu:1},sw:2,cl:2,pr:1,ni:0,use:{d:3,o:1,g:3},se:['봄','여름','가을','겨울']},
-{name:'로즈 뮤스크',line:'시그니처',store:null,fam:'플로럴 파우더리',
- notes:['불가리안 로즈','바이올렛','화이트 머스크'],
+ dry:'화이트 머스크가 피부에 밀착하며 남기는 포근하고 클린한 스킨 시밀레, 강하지 않은 확산력으로 하루 내내 잔잔히 이어지는 잔향'},
+{name:'로즈 뮤스크',fam:'플로럴 파우더리',notes:['불가리안 로즈','바이올렛','화이트 머스크'],
  top:'생화를 그대로 옮겨온 듯 진한 불가리안 로즈 앱솔루트가 터지는 고혹적인 첫 확산',
  mid:'바이올렛 잎과 아이리스 파우더가 로즈의 결을 한층 섬세하게 감싸며 깊어지는 벨벳 같은 플로럴 하트',
- dry:'화이트 머스크가 로즈의 잔영을 오래 붙잡아 두는, 은은하고 포근한 스킨 클로즈 잔향',
- similar:'딥디크 오 로즈',badges:['고급 로즈 대표','선물 최적'],
- t:{fl:3,pw:2,mu:1},sw:1,cl:1,pr:3,ni:1,use:{d:1,o:3,g:3},se:['봄','여름','가을','겨울']},
-{name:'상탈 누와',line:'시그니처',store:null,fam:'우디 아로마틱',
- notes:['프레쉬 허브','샌달우드','베티버'],
+ dry:'화이트 머스크가 로즈의 잔영을 오래 붙잡아 두는, 은은하고 포근한 스킨 클로즈 잔향'},
+{name:'상탈 누와',fam:'우디 아로마틱',notes:['프레쉬 허브','샌달우드','베티버'],
  top:'로즈마리·타임 계열의 프레쉬 허브가 알코올과 함께 산뜻하게 퍼지는 그린 아로마틱 첫인상',
  mid:'허브의 청량감이 가라앉으며 마이소르 샌달우드 특유의 크리미한 목질감이 서서히 올라오는 전환의 하트',
- dry:'베티버의 흙내음과 샌달우드의 밀키한 온기가 뒤엉켜 오래 남는, 깊고 따뜻한 우디 잔향',
- similar:'르라보 상탈',badges:['니치 무드','남녀 모두'],
- t:{wd:3,ci:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:2},se:['가을','겨울']},
-{name:'오드 쟈뎅',line:'시그니처',store:null,fam:'프레쉬 우디 프루티',
- notes:['달콤한 배','무화과','시더우드'],
+ dry:'베티버의 흙내음과 샌달우드의 밀키한 온기가 뒤엉켜 오래 남는, 깊고 따뜻한 우디 잔향'},
+{name:'오드 쟈뎅',fam:'프레쉬 우디 프루티',notes:['달콤한 배','무화과','시더우드'],
  top:'비 갠 정원의 젖은 잎사귀처럼 청량한 배 노트가 톡 터지는 그린 프루티 첫인상',
  mid:'무화과 잎의 밀키한 그린감이 배의 과즙과 섞이며 만드는 자연스럽고 클린한 하트',
- dry:'버지니아 시더우드의 맑고 드라이한 결이 잔잔하게 이어지는, 가볍고 클린한 우디 잔향',
- similar:'에르메스 운 자르뎅',badges:['클린 데일리','유니섹스'],
- t:{ci:2,fr:2,wd:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을']},
-{name:'퓨어 모브',line:'시그니처',store:null,fam:'파우더리 플로럴 머스크',
- notes:['미모사','바이올렛','헬리오트로프'],
+ dry:'버지니아 시더우드의 맑고 드라이한 결이 잔잔하게 이어지는, 가볍고 클린한 우디 잔향'},
+{name:'퓨어 모브',fam:'파우더리 플로럴 머스크',notes:['미모사','바이올렛','헬리오트로프'],
  top:'미모사 특유의 노랗고 포근한 꽃가루 향이 부드럽게 번지는 파우더리 첫 확산',
  mid:'바이올렛과 헬리오트로프가 아몬드빛 스위트함을 더하며 밸런스 잡힌 포근한 플로럴 하트로 이어짐',
- dry:'머스크가 파우더 입자처럼 얇게 피부에 내려앉는, 따뜻하고 보들한 잔향',
- similar:'딥디크 필로시코스',badges:['파우더리','유니섹스'],
- t:{pw:3,fl:2,mu:2},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:1},se:['봄','가을','겨울']},
-{name:'오드 블론드',line:'시그니처',store:null,fam:'우디 레더 인센스',
- notes:['소프트 레더','인센스','블론드 우드'],
+ dry:'머스크가 파우더 입자처럼 얇게 피부에 내려앉는, 따뜻하고 보들한 잔향'},
+{name:'오드 블론드',fam:'우디 레더 인센스',notes:['소프트 레더','인센스','블론드 우드'],
  top:'무두질한 스웨이드 특유의 그을린 듯한 향이 인센스 연기와 함께 낮게 퍼지는 딥한 첫인상',
  mid:'올리바눔의 신비로운 훈연감이 레더의 결을 감싸며 서서히 무게중심을 낮추는 전환',
- dry:'블론드 우드가 레더와 인센스를 하나로 묶어 남기는, 고급스럽고 묵직한 앰버빛 잔향',
- similar:null,badges:['딥 우디','시그니처 향'],
- t:{wd:3,le:3,in:2},sw:0,cl:0,pr:3,ni:2,use:{d:0,o:3,g:3},se:['가을','겨울']},
-{name:'베티베르',line:'시그니처',store:null,fam:'어쓰 우디 시트러스',
- notes:['베티버','로즈','오크모스'],
+ dry:'블론드 우드가 레더와 인센스를 하나로 묶어 남기는, 고급스럽고 묵직한 앰버빛 잔향'},
+{name:'베티베르',fam:'어쓰 우디 시트러스',notes:['베티버','로즈','오크모스'],
  top:'자몽·베르가못 계열 시트러스가 밝게 터지며 로즈의 그린한 결을 함께 끌어올리는 첫인상',
  mid:'베티버 특유의 얼씨하고 뿌리 깊은 흙내음이 로즈와 뒤섞이며 니치한 무드로 전환되는 하트',
- dry:'오크모스의 이끼향과 베티버의 잔뿌리 같은 질감이 오래도록 가라앉는 자연적인 우디 잔향',
- similar:'바이레도 집시워터',badges:['니치 무드','오래 지속'],
- t:{wd:3,ci:1,fl:1},sw:0,cl:1,pr:2,ni:3,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
-{name:'르 바캉스',line:'시그니처',store:null,fam:'스위트 프루티 시트러스',
- notes:['만다린','망고','블랙 커런트'],
+ dry:'오크모스의 이끼향과 베티버의 잔뿌리 같은 질감이 오래도록 가라앉는 자연적인 우디 잔향'},
+{name:'르 바캉스',fam:'스위트 프루티 시트러스',notes:['만다린','망고','블랙 커런트'],
  top:'만다린 껍질을 짓눌러 낸 듯 상큼하고 즙 많은 첫 확산',
  mid:'무르익은 망고와 블랙 커런트가 겹쳐지며 파우더리한 잔당감으로 부드러워지는 프루티 하트',
- dry:'시트러스의 산뜻함이 옅은 머스크 위에 남아 달콤하면서도 가볍게 마무리되는 잔향',
- similar:null,badges:['선물 1순위','전 연령'],
- t:{fr:3,ci:2,gm:1},sw:3,cl:0,pr:2,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
-{name:'버가우드',line:'시그니처',store:null,fam:'시트러스 우디 스파이시',
- notes:['베르가못','아가우드','패출리'],
+ dry:'시트러스의 산뜻함이 옅은 머스크 위에 남아 달콤하면서도 가볍게 마무리되는 잔향'},
+{name:'버가우드',fam:'시트러스 우디 스파이시',notes:['베르가못','아가우드','패출리'],
  top:'캘러브리아 베르가못과 레몬 제스트가 밝고 씁쓸달콤하게 퍼지는 첫인상',
  mid:'시트러스가 가라앉으며 아가우드 특유의 스모키하고 신비로운 목질감이 서서히 드러나는 전환',
- dry:'패출리의 흙내음이 아가우드를 붙잡아 두며, 피부 위에서 저마다 다르게 완성되는 시그니처 잔향',
- similar:'톰포드 오드우드',badges:['개성 시그니처','유니섹스'],
- t:{ci:2,wd:3,sp:1},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:2,g:1},se:['가을','겨울']},
-{name:'페슈 무아',line:'시그니처',store:null,fam:'소프트 프루티 플로럴',
- notes:['옐로우 피치','화이트 로즈','알데하이드'],
+ dry:'패출리의 흙내음이 아가우드를 붙잡아 두며, 피부 위에서 저마다 다르게 완성되는 시그니처 잔향'},
+{name:'페슈 무아',fam:'소프트 프루티 플로럴',notes:['옐로우 피치','화이트 로즈','알데하이드'],
  top:'알데하이드 특유의 비누 같은 투명함이 맑게 퍼지는 클린한 첫 확산',
  mid:'옐로우 피치의 보숭보숭한 과즙감이 화이트 로즈와 겹쳐지며 만드는 달콤하고 소프트한 플로럴 하트',
- dry:'알데하이드의 밝은 잔영이 은은한 머스크 위에 남아 클린하고 화사하게 마무리되는 잔향',
- similar:null,badges:['복숭아 1순위','선물 인기'],
- t:{fr:3,fl:2},sw:2,cl:2,pr:1,ni:0,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
-{name:'솔레이 누드',line:'시그니처',store:null,fam:'플로럴 오리엔탈',
- notes:['오렌지 블로썸','일랑일랑','바닐라'],
+ dry:'알데하이드의 밝은 잔영이 은은한 머스크 위에 남아 클린하고 화사하게 마무리되는 잔향'},
+{name:'솔레이 누드',fam:'플로럴 오리엔탈',notes:['오렌지 블로썸','일랑일랑','바닐라'],
  top:'오렌지 블로썸의 달콤하고 관능적인 시트러스 플로럴이 짙게 퍼지는 첫인상',
  mid:'일랑일랑과 자스민이 크리미한 트로피컬 플로럴로 확장되며 존재감을 더하는 하트',
- dry:'바닐라와 통카빈이 우디 머스크와 함께 남기는, 따뜻하고 관능적인 오리엔탈 잔향',
- similar:'샤넬 NO.5',badges:['고급 외출 향','클래식'],
- t:{fl:3,gm:1},sw:2,cl:0,pr:3,ni:1,use:{d:0,o:3,g:2},se:['봄','가을','겨울']},
-{name:'시트론',line:'시그니처',store:null,fam:'시트러스 아로마틱',
- notes:['싱그러운 오렌지','바질','패출리'],
+ dry:'바닐라와 통카빈이 우디 머스크와 함께 남기는, 따뜻하고 관능적인 오리엔탈 잔향'},
+{name:'시트론',fam:'시트러스 아로마틱',notes:['싱그러운 오렌지','바질','패출리'],
  top:'오렌지·만다린 껍질을 벗기는 순간처럼 씁쓸달콤하게 터지는 시트러스 첫 확산',
  mid:'바질 잎의 그린하고 알싸한 아로마틱함이 시트러스를 산뜻하게 지탱하는 활기찬 하트',
- dry:'패출리의 미세한 흙내음이 시트러스의 잔영 위로 감각적으로 내려앉는 잔향',
- similar:'조말론 라임 바질 앤 만다린',badges:['여름 1순위','유니섹스'],
- t:{ci:3},sw:1,cl:2,pr:1,ni:0,use:{d:3,o:2,g:1},se:['봄','여름']},
-{name:'영 로즈',line:'플라워',store:null,fam:'플로럴 스파이시',
- notes:['로즈 앱솔루트','핑크 페퍼','베티버'],
+ dry:'패출리의 미세한 흙내음이 시트러스의 잔영 위로 감각적으로 내려앉는 잔향'},
+{name:'영 로즈',fam:'플로럴 스파이시',notes:['로즈 앱솔루트','핑크 페퍼','베티버'],
  top:'만다린과 핑크 페퍼가 알싸하고 생기 있게 톡 쏘는 스파클링한 첫인상',
  mid:'로즈 앱솔루트가 스위트하게 피어나며 핑크 페퍼의 잔잔한 자극과 대비를 이루는 하트',
- dry:'베티버의 신선하고 자연스러운 목질감이 로즈의 잔향을 가볍게 붙잡아 두는 잔향',
- similar:null,badges:['생동감 로즈','전 연령'],
- t:{fl:3,sp:1},sw:1,cl:1,pr:2,ni:1,use:{d:2,o:1,g:3},se:['봄','여름','가을','겨울']},
-{name:'프리지아 듀',line:'플라워',store:null,fam:'프레쉬 플로럴',
- notes:['프리지아','투명한 뮤게','풋사과'],
+ dry:'베티버의 신선하고 자연스러운 목질감이 로즈의 잔향을 가볍게 붙잡아 두는 잔향'},
+{name:'프리지아 듀',fam:'프레쉬 플로럴',notes:['프리지아','투명한 뮤게','풋사과'],
  top:'이슬 맺힌 풋사과처럼 상큼하고 청량한 그린 프루티 첫 확산',
  mid:'프리지아와 뮤게(은방울꽃)가 투명하게 겹쳐지며 만드는 맑고 청초한 플로럴 부케',
- dry:'화이트 머스크 위로 남는 가볍고 깨끗한 플로럴 잔향, 부담 없이 스치듯 이어짐',
- similar:'산타마리아 노벨라 프리지아',badges:['청초함','20대 인기'],
- t:{fl:3,fr:1},sw:1,cl:3,pr:1,ni:0,use:{d:3,o:1,g:2},se:['봄','여름','가을','겨울']},
-{name:'베일 드 뉘',line:'플라워',store:null,fam:'플로럴 머스키 알데하이드',
- notes:['알데하이드','바이올렛','머스크'],
+ dry:'화이트 머스크 위로 남는 가볍고 깨끗한 플로럴 잔향, 부담 없이 스치듯 이어짐'},
+{name:'베일 드 뉘',fam:'플로럴 머스키 알데하이드',notes:['알데하이드','바이올렛','머스크'],
  top:'알데하이드 특유의 비누 같은 투명함이 포근하게 번지는 섬세한 첫인상',
  mid:'바이올렛의 파우더리함이 머스크와 미리 만나 하트와 베이스의 경계를 지우는 부드러운 전환',
- dry:'머스크가 피부 결을 따라 오래도록 은은하게 남는, 따뜻하고 지속력 강한 잔향',
- similar:null,badges:['긴 잔향','다용도'],
- t:{mu:3,pw:2,fl:1},sw:1,cl:1,pr:1,ni:1,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
-{name:'메이 아이 파이브',line:'플라워',store:null,fam:'아로마틱 플로럴',
- notes:['라일락','유칼립투스','암브레트'],
+ dry:'머스크가 피부 결을 따라 오래도록 은은하게 남는, 따뜻하고 지속력 강한 잔향'},
+{name:'메이 아이 파이브',fam:'아로마틱 플로럴',notes:['라일락','유칼립투스','암브레트'],
  top:'유칼립투스의 시원하고 멘솔릭한 아로마틱함이 산뜻하게 퍼지는 첫인상',
  mid:'라일락의 깨끗한 플로럴이 유칼립투스와 균형을 이루며 상쾌함을 이어가는 하트',
- dry:'암브레트 머스크가 가볍게 내려앉아, 부담 없이 편안하게 마무리되는 잔향',
- similar:null,badges:['프레쉬 아로마','편안한 착용감'],
- t:{fl:2,ci:1},sw:0,cl:2,pr:1,ni:1,use:{d:3,o:2,g:0},se:['봄','여름','가을']},
-{name:'아이보리 뉘',line:'플라워',store:null,fam:'플로럴 스파이시 머스키',
- notes:['튜베로즈','핑크 페퍼','화이트 머스크'],
+ dry:'암브레트 머스크가 가볍게 내려앉아, 부담 없이 편안하게 마무리되는 잔향'},
+{name:'아이보리 뉘',fam:'플로럴 스파이시 머스키',notes:['튜베로즈','핑크 페퍼','화이트 머스크'],
  top:'핑크 페퍼의 알싸하고 스파클링한 자극이 톡 쏘듯 퍼지는 독특한 첫인상',
  mid:'튜베로즈 특유의 짙고 크리미한 플로럴이 무화과 잎의 그린함과 만나 관능적으로 피어나는 하트',
- dry:'화이트 머스크가 튜베로즈의 여운을 부드럽게 감싸 안는, 깊고 매력적인 잔향',
- similar:'딥디크 도손',badges:['독특한 플로럴','매력적 잔향'],
- t:{fl:2,sp:2,mu:2},sw:1,cl:1,pr:2,ni:2,use:{d:2,o:2,g:0},se:['봄','가을','겨울']},
-{name:'자스민 퀴레',line:'플라워',store:null,fam:'플로럴 레더',
- notes:['자스민','일랑일랑','레더'],
+ dry:'화이트 머스크가 튜베로즈의 여운을 부드럽게 감싸 안는, 깊고 매력적인 잔향'},
+{name:'자스민 퀴레',fam:'플로럴 레더',notes:['자스민','일랑일랑','레더'],
  top:'인돌 함량이 낮게 정제된 화이트 자스민이 맑고 우아하게 퍼지는 첫인상',
  mid:'일랑일랑의 크리미함이 자스민을 감싸며, 무두질된 레더가 서서히 무게를 더하는 전환',
- dry:'레더와 앰버가 자스민의 잔영을 세련되게 붙잡아 두는, 남녀 모두에게 어울리는 잔향',
- similar:null,badges:['레더 플로럴','남녀 공용'],
- t:{fl:2,le:2},sw:0,cl:1,pr:2,ni:2,use:{d:2,o:3,g:0},se:['봄','가을','겨울']},
-{name:'더스키 플레르',line:'플라워',store:null,fam:'프루티 플로럴 앰버',
- notes:['오스만투스','도넛 복숭아','앰버'],
+ dry:'레더와 앰버가 자스민의 잔영을 세련되게 붙잡아 두는, 남녀 모두에게 어울리는 잔향'},
+{name:'더스키 플레르',fam:'프루티 플로럴 앰버',notes:['오스만투스','도넛 복숭아','앰버'],
  top:'도넛 피치의 달큰함과 은은한 토바코 잎이 함께 퍼지는 독특하고 매력적인 첫인상',
  mid:'오스만투스 특유의 짙고 살구빛 플로럴이 프루티 노트와 뒤엉키며 니치한 밀도로 짙어지는 하트',
- dry:'앰버의 레진 같은 온기가 오스만투스의 잔향을 포근하게 감싸는, 길고 따뜻한 잔향',
- similar:null,badges:['니치 무드','앰버 잔향'],
- t:{fr:2,fl:2,gm:1},sw:2,cl:0,pr:2,ni:3,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
-{name:'아벤쿠아 25',en:'AVENQUA 25',line:'익스클루시브',store:'광안',fam:'아쿠아틱 플로럴',
+ dry:'앰버의 레진 같은 온기가 오스만투스의 잔향을 포근하게 감싸는, 길고 따뜻한 잔향'},
+{name:'아벤쿠아 25',en:'AVENQUA 25',fam:'아쿠아틱 플로럴',
  story:'광안리 바다를 담은 향 — 숫자 \'25\'는 센티카 광안의 주소에서 왔습니다.',
  notes:['아쿠아틱 어코드','로투스','화이트 머스크'],
  top:'부서지는 파도의 오존 향과 짠내를 머금은 시원한 아쿠아틱 어코드가 퍼지는 첫인상',
  mid:'로투스(연꽃)의 맑고 투명한 플로럴이 아쿠아틱함 위로 부드럽게 피어나는 하트',
- dry:'화이트 머스크가 바다 내음을 클린하게 정리해 오래 남기는, 산뜻하고 지속력 있는 잔향',
- similar:null,badges:['광안 단독','바다 무드'],
- t:{aq:3,ci:1,mu:1},sw:0,cl:3,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름']},
-{name:'브뤼떼 12',en:'BRUTEA 12',line:'익스클루시브',store:'전포',fam:'구르망 우디 앰버',
+ dry:'화이트 머스크가 바다 내음을 클린하게 정리해 오래 남기는, 산뜻하고 지속력 있는 잔향'},
+{name:'브뤼떼 12',en:'BRUTEA 12',fam:'구르망 우디 앰버',
  story:'전포 카페거리를 담은 향 — 숫자 \'12\'는 센티카 전포의 주소에서 왔습니다.',
  notes:['커피','통카빈','벤조인'],
  top:'갓 로스팅한 원두의 쌉싸름하고 진한 커피 향이 바닐라빛 단내와 함께 퍼지는 첫인상',
  mid:'통카빈의 건초 같은 달콤함이 커피의 씁쓸함과 균형을 이루며 부드러워지는 구르망 하트',
- dry:'벤조인의 레진감이 따뜻하게 굳어지며 남기는, 포근하고 달콤한 잔향',
- similar:null,badges:['전포 단독','커피 컨셉'],
- t:{gm:3,wd:1},sw:3,cl:0,pr:2,ni:2,use:{d:2,o:2,g:2},se:['봄','가을','겨울']},
-{name:'잉크하이브 21',en:'INKHIVE 21',line:'익스클루시브',store:'소격',fam:'인센스 우디 스모키',
+ dry:'벤조인의 레진감이 따뜻하게 굳어지며 남기는, 포근하고 달콤한 잔향'},
+{name:'잉크하이브 21',en:'INKHIVE 21',fam:'인센스 우디 스모키',
  story:'소격동 한옥 서가, 벼루 위 먹을 가는 순간을 담은 향 — 숫자 \'21\'은 센티카 소격의 주소에서 왔습니다.',
  notes:['올리바눔','먹 (墨)','패출리'],
  top:'블랙 페퍼의 알싸함과 훈연된 올리바눔 연기가 벼루 위 먹을 가는 순간처럼 피어오르는 첫인상',
  mid:'훈연의 씁쓸함이 잦아들며 시더우드와 샌달우드의 결 고운 목질감이 서서히 짙어지는 지적인 하트',
- dry:'오래된 서가에 고인 먹향처럼, 크리미한 샌달우드가 밀도 있게 오래 머무는 잔향',
- similar:null,badges:['소격 단독','한국적 인센스'],
- t:{in:3,wd:3},sw:0,cl:0,pr:3,ni:3,use:{d:1,o:2,g:2},se:['가을','겨울']},
-{name:'베이지 70',en:'BEIJI 70',line:'익스클루시브',store:'소격',fam:'파우더리 스킨 머스크',
+ dry:'오래된 서가에 고인 먹향처럼, 크리미한 샌달우드가 밀도 있게 오래 머무는 잔향'},
+{name:'베이지 70',en:'BEIJI 70',fam:'파우더리 스킨 머스크',
  story:'한옥 창살 사이 햇살과 따스한 한지의 색감을 담은 향 — 숫자 \'70\'은 센티카 소격의 주소에서 왔습니다.',
  notes:['쌀','암브레트','머스크'],
  top:'갓 지은 쌀밥의 고소하고 맑은 김이 우유 거품처럼 부드럽게 번지는 투명한 첫인상',
  mid:'암브레트가 사향빛 온기를 더하며 한옥 마루의 볕처럼 고요하게 데워지는 파우더리 하트',
- dry:'머스크가 제2의 피부처럼 정착해, 살결 그 자체처럼 오래 남는 스킨 시밀레 잔향',
- similar:null,badges:['소격 단독','스킨 머스크'],
- t:{mu:3,pw:2},sw:1,cl:2,pr:1,ni:2,use:{d:2,o:2,g:2},se:['봄','여름','가을']},
-{name:'샤플렛 54',en:'SAFLEAT 54',line:'익스클루시브',store:'한남',fam:'레더 우디 플로럴',
+ dry:'머스크가 제2의 피부처럼 정착해, 살결 그 자체처럼 오래 남는 스킨 시밀레 잔향'},
+{name:'샤플렛 54',en:'SAFLEAT 54',fam:'레더 우디 플로럴',
  story:'한남동의 세련된 건축과 편집숍 거리를 담은 향 — 숫자 \'54\'는 센티카 한남의 주소에서 왔습니다.',
  notes:['샤프란','미모사','스웨이드'],
  top:'이국적인 샤프란의 가죽 같은 스파이시함과 미모사의 노란 온기가 함께 퍼지는 첫인상',
  mid:'벨벳처럼 부드러운 스웨이드 위로 미모사 플로럴이 스며들며 감각적으로 짙어지는 레더 하트',
- dry:'우디가 스웨이드의 결을 단단히 잡아주며 피부 위에 오래 남는, 스타일리시한 잔향',
- similar:null,badges:['한남 단독','플로럴 레더'],
- t:{le:2,fl:2,sp:1,wd:1},sw:1,cl:0,pr:2,ni:2,use:{d:1,o:2,g:3},se:['봄','가을','겨울']}
-];
-
-const g=(p,k)=>p.t[k]||0;
+ dry:'우디가 스웨이드의 결을 단단히 잡아주며 피부 위에 오래 남는, 스타일리시한 잔향'}
+],
+en:[
+{name:'Fleur Éclot',fam:'Floral Fruity',notes:['Peony','Apricot','White Musk'],
+ top:"A sparkling burst of juicy apricot and mandarin leaf, brightened by a whisper of aldehyde.",
+ mid:"Peony absolute blooms into a velvety heart, layered with the succulent sweetness of ripe peach — a radiant floral-fruity bouquet.",
+ dry:"White musk settles close to the skin, warm and clean, lingering softly all day without ever overwhelming."},
+{name:'Rose Musc',fam:'Floral Powdery',notes:['Bulgarian Rose','Violet','White Musk'],
+ top:"An intensely alluring burst of Bulgarian rose absolute, as vivid as a freshly cut bloom.",
+ mid:"Violet leaf and iris powder wrap the rose in a finer texture, deepening into a velvety floral heart.",
+ dry:"White musk holds the rose's afterglow for hours — a soft, warm, close-to-skin finish."},
+{name:'Santal Noir',fam:'Woody Aromatic',notes:['Fresh Herbs','Sandalwood','Vetiver'],
+ top:"Rosemary and thyme burst crisp and green alongside the alcohol's brightness — a fresh, aromatic first impression.",
+ mid:"As the herbs settle, Mysore sandalwood's creamy woodiness rises slowly — a transitional, evolving heart.",
+ dry:"Vetiver's earthiness intertwines with sandalwood's milky warmth, lingering deep and long."},
+{name:'Eau de Jardin',fam:'Fresh Woody Fruity',notes:['Sweet Pear','Fig','Cedarwood'],
+ top:"As crisp as wet leaves after rain, a green pear note bursts open — fresh and fruity.",
+ mid:"Fig leaf's milky green facet blends with the pear's juiciness into a natural, clean heart.",
+ dry:"Virginia cedarwood's clear, dry finish lingers lightly — a clean and airy woody trail."},
+{name:'Pure Mauve',fam:'Powdery Floral Musk',notes:['Mimosa','Violet','Heliotrope'],
+ top:"Mimosa's soft, golden pollen-like scent unfolds gently — a powdery, tender opening.",
+ mid:"Violet and heliotrope add an almond-like sweetness, balancing into a warm, powdery floral heart.",
+ dry:"Musk settles onto the skin like fine powder, leaving a warm, cushiony trail."},
+{name:'Ode Blonde',fam:'Woody Leather Incense',notes:['Soft Leather','Incense','Blonde Wood'],
+ top:"The scorched scent of tanned suede spreads low, mingling with incense smoke — a deep, mysterious opening.",
+ mid:"Olibanum's smoky mystique wraps around the leather, gradually lowering the scent's center of gravity.",
+ dry:"Blonde wood binds leather and incense into one — a luxurious, weighty amber trail."},
+{name:'Vétiver',fam:'Earthy Woody Citrus',notes:['Vetiver','Rose','Oakmoss'],
+ top:"Grapefruit and bergamot citrus burst bright, lifting rose's green facet with them.",
+ mid:"Vetiver's raw, deeply rooted earthiness mingles with rose, shifting into a niche, grounded heart.",
+ dry:"Oakmoss and vetiver's root-like texture settle slowly — a naturally woody, long-lasting trail."},
+{name:'Le Vacances',fam:'Sweet Fruity Citrus',notes:['Mandarin','Mango','Blackcurrant'],
+ top:"As if the peel of a mandarin were just pressed open — a tangy, juicy burst.",
+ mid:"Ripe mango and blackcurrant layer in, softening into a powdery-sweet fruity heart.",
+ dry:"Citrus freshness lingers over a faint musk, finishing sweet yet light."},
+{name:'Bergawood',fam:'Citrus Woody Spicy',notes:['Bergamot','Agarwood','Patchouli'],
+ top:"Calabrian bergamot and lemon zest spread bright and bittersweet.",
+ mid:"As the citrus settles, agarwood's smoky, mysterious woodiness slowly reveals itself.",
+ dry:"Patchouli's earthiness holds the agarwood in place — a signature trail that unfolds differently on every skin."},
+{name:'Pêche Moi',fam:'Soft Fruity Floral',notes:['Yellow Peach','White Rose','Aldehyde'],
+ top:"Aldehyde's soap-like transparency spreads clean and bright as the very first impression.",
+ mid:"Yellow peach's fuzzy juiciness layers with white rose into a sweet, soft floral heart.",
+ dry:"Aldehyde's bright afterglow rests on a soft musk, finishing clean and radiant."},
+{name:'Soleil Nude',fam:'Floral Oriental',notes:['Orange Blossom','Ylang-Ylang','Vanilla'],
+ top:"Orange blossom's sweet, sensual citrus-floral spreads richly as the opening.",
+ mid:"Ylang-ylang and jasmine expand into a creamy tropical floral, adding presence to the heart.",
+ dry:"Vanilla and tonka bean settle with woody musk into a warm, sensual oriental trail."},
+{name:'Citron',fam:'Citrus Aromatic',notes:['Fresh Orange','Basil','Patchouli'],
+ top:"As if peeling fresh orange and mandarin — a bittersweet citrus burst.",
+ mid:"Basil leaf's green, spicy aromatic freshness holds up the citrus with lively energy.",
+ dry:"Patchouli's fine earthiness settles sensually over the citrus's afterglow."},
+{name:'Young Rose',fam:'Floral Spicy',notes:['Rose Absolute','Pink Pepper','Vetiver'],
+ top:"Mandarin and pink pepper spark with a lively, spicy sparkle.",
+ mid:"Rose absolute blooms sweetly, contrasting with pink pepper's gentle bite.",
+ dry:"Vetiver's fresh, natural woodiness gently holds the rose's trail."},
+{name:'Freesia Dew',fam:'Fresh Floral',notes:['Freesia','Lily of the Valley','Green Apple'],
+ top:"As crisp as a dew-covered green apple — a refreshing green-fruity burst.",
+ mid:"Freesia and lily of the valley overlap transparently into a clear, pure floral bouquet.",
+ dry:"A light, clean floral trail rests over white musk, brushing past effortlessly."},
+{name:'Voile de Nuit',fam:'Floral Musky Aldehyde',notes:['Aldehyde','Violet','Musk'],
+ top:"Aldehyde's soap-like transparency spreads with a delicate warmth.",
+ mid:"Violet's powdery softness meets musk early, blurring the line between heart and base.",
+ dry:"Musk lingers along the skin for a long time — warm and enduring."},
+{name:'May I Five',fam:'Aromatic Floral',notes:['Lilac','Eucalyptus','Ambrette'],
+ top:"Eucalyptus's cool, menthol-like freshness spreads crisply at first.",
+ mid:"Lilac's clean floral balances with eucalyptus, carrying the freshness forward.",
+ dry:"Ambrette musk settles lightly, finishing comfortable and easy to wear."},
+{name:'Ivory Nuit',fam:'Floral Spicy Musky',notes:['Tuberose','Pink Pepper','White Musk'],
+ top:"Pink pepper's spicy sparkle bursts with a distinctive first impression.",
+ mid:"Tuberose's rich, creamy floral meets fig leaf's greenness, blooming sensually.",
+ dry:"White musk gently wraps tuberose's afterglow — a deep, captivating trail."},
+{name:'Jasmin Cuir',fam:'Floral Leather',notes:['Jasmine','Ylang-Ylang','Leather'],
+ top:"Low-indole white jasmine spreads clear and elegant at first.",
+ mid:"Ylang-ylang's creaminess wraps the jasmine as tanned leather slowly adds weight.",
+ dry:"Leather and amber sophisticatedly hold jasmine's afterglow — a trail for everyone."},
+{name:'Dusky Fleur',fam:'Fruity Floral Amber',notes:['Osmanthus','Doughnut Peach','Amber'],
+ top:"Doughnut peach's sweetness mingles with a whisper of tobacco leaf — a distinctive, alluring opening.",
+ mid:"Osmanthus's deep, apricot-like floral tangles with fruity notes, deepening into a niche density.",
+ dry:"Amber's resinous warmth wraps osmanthus's afterglow — a long, warm trail."},
+{name:'AVENQUA 25',fam:'Aquatic Floral',
+ story:"A scent that captures the sea at Gwangalli Beach — the number '25' comes from the address of Scentica Gwangan.",
+ notes:['Aquatic Accord','Lotus','White Musk'],
+ top:"Breaking waves' ozonic freshness and a hint of sea salt spread cool and crisp.",
+ mid:"Lotus's clear, transparent floral blooms gently over the aquatic accord.",
+ dry:"White musk cleanly settles the sea's scent, leaving a fresh, long-lasting trail."},
+{name:'BRUTEA 12',fam:'Gourmand Woody Amber',
+ story:"A scent that captures Jeonpo's café street — the number '12' comes from the address of Scentica Jeonpo.",
+ notes:['Coffee','Tonka Bean','Benzoin'],
+ top:"Freshly roasted coffee's bitter richness spreads alongside a vanilla-like sweetness.",
+ mid:"Tonka bean's hay-like sweetness balances coffee's bitterness into a soft gourmand heart.",
+ dry:"Benzoin's resin hardens warmly, leaving a cozy, sweet trail."},
+{name:'INKHIVE 21',fam:'Incense Woody Smoky',
+ story:"A scent that captures a moment of grinding ink on an inkstone in a hanok library in Sogyeok-dong — the number '21' comes from the address of Scentica Sogyeok.",
+ notes:['Olibanum','Ink (Muk)','Patchouli'],
+ top:"Black pepper's spice and smoky olibanum rise like ink being ground on a stone.",
+ mid:"As the smoke settles, cedarwood and sandalwood's fine woodiness deepens into an intellectual heart.",
+ dry:"Like ink lingering in an old library, creamy sandalwood stays densely, long into the trail."},
+{name:'BEIJI 70',fam:'Powdery Skin Musk',
+ story:"A scent that captures sunlight through hanok lattice windows and the warm hue of hanji paper — the number '70' comes from the address of Scentica Sogyeok.",
+ notes:['Rice','Ambrette','Musk'],
+ top:"Freshly steamed rice's nutty, clear steam spreads as softly as milk foam — a transparent opening.",
+ mid:"Ambrette adds a musky warmth, quietly heating up like sunlight on a hanok floor.",
+ dry:"Musk settles like a second skin, lingering as long as the skin itself — a skin-scent trail."},
+{name:'SAFLEAT 54',fam:'Leather Woody Floral',
+ story:"A scent that captures Hannam-dong's refined architecture and concept-store streets — the number '54' comes from the address of Scentica Hannam.",
+ notes:['Saffron','Mimosa','Suede'],
+ top:"Exotic saffron's leathery spice and mimosa's golden warmth spread together.",
+ mid:"Mimosa's floral seeps into velvety suede, deepening sensually into a leather heart.",
+ dry:"Woody notes firmly hold suede's texture, leaving a stylish trail that lasts."}
+],
+zh:[
+{name:'Fleur Éclot',fam:'花香果香调',notes:['牡丹','杏子','白麝香'],
+ top:'多汁杏子与柑橘叶如气泡般跳跃绽放,一丝醛香为其增添明亮感。',
+ mid:'牡丹精油如天鹅绒般盛开,交织着熟桃般多汁的甜美,勾勒出明媚的花果香气。',
+ dry:'白麝香贴合肌肤,留下温暖而洁净的余韵,不张扬却整日萦绕。'},
+{name:'Rose Musc',fam:'花香粉调',notes:['保加利亚玫瑰','紫罗兰','白麝香'],
+ top:'浓郁迷人的保加利亚玫瑰精油如鲜切花般绽放。',
+ mid:'紫罗兰叶与鸢尾粉末为玫瑰增添细腻质感,渐渐沉淀为丝绒般的花香中调。',
+ dry:'白麝香长久留住玫瑰的余韵,留下温柔而温暖的贴肤尾香。'},
+{name:'Santal Noir',fam:'木质芳香调',notes:['清新香草','檀香','岩兰草'],
+ top:'迷迭香与百里香般的清新草本随酒精一同散开,呈现清爽的绿色芳香调开场。',
+ mid:'草本的清凉渐渐沉淀,迈索尔檀香特有的乳脂木质感缓缓浮现,构成过渡般的中调。',
+ dry:'岩兰草的泥土气息与檀香的乳感暖意交织,留下深沉而悠长的木质尾香。'},
+{name:'Eau de Jardin',fam:'清新木质果香调',notes:['甜梨','无花果','雪松'],
+ top:'如雨后湿润叶片般清新的梨子调轻盈绽放,呈现绿色果香开场。',
+ mid:'无花果叶的乳绿感与梨子的多汁交融,勾勒出自然洁净的中调。',
+ dry:'弗吉尼亚雪松清澈干爽的木质余韵轻盈延续,留下清透空气感的尾香。'},
+{name:'Pure Mauve',fam:'粉感花香麝香调',notes:['含羞草','紫罗兰','向日葵素'],
+ top:'含羞草特有的金黄花粉气息柔和展开,呈现温柔的粉感开场。',
+ mid:'紫罗兰与向日葵素带来杏仁般的甜意,平衡出温暖粉感的花香中调。',
+ dry:'麝香如细腻粉末般落在肌肤上,留下温暖柔软的余韵。'},
+{name:'Ode Blonde',fam:'木质皮革熏香调',notes:['软皮革','乳香','浅色木质'],
+ top:'鞣制麂皮般略带烟熏感的气息与乳香烟雾一同低沉散开,呈现深邃神秘的开场。',
+ mid:'乳香的烟熏神秘感包裹皮革,重心逐渐下沉的转折中调。',
+ dry:'浅色木质将皮革与乳香融为一体,留下奢华厚重的琥珀尾香。'},
+{name:'Vétiver',fam:'大地木质柑橘调',notes:['岩兰草','玫瑰','橡木苔'],
+ top:'西柚与佛手柑的柑橘调明亮跳跃,同时唤起玫瑰的绿色气息。',
+ mid:'岩兰草独特的泥土与根系气息与玫瑰交织,转向深邃小众的中调。',
+ dry:'橡木苔的苔藓气息与岩兰草根须般的质感缓缓沉淀,留下自然悠长的木质尾香。'},
+{name:'Le Vacances',fam:'甜美果香柑橘调',notes:['橘子','芒果','黑加仑'],
+ top:'如同橘皮被轻轻掐开般清新多汁的开场。',
+ mid:'成熟芒果与黑加仑层层叠加,化作带有粉甜余韵的果香中调。',
+ dry:'柑橘的清新留存在淡淡麝香之上,以香甜而轻盈的姿态收尾。'},
+{name:'Bergawood',fam:'柑橘木质辛香调',notes:['佛手柑','沉香','广藿香'],
+ top:'卡拉布里亚佛手柑与柠檬皮明亮而微苦甘甜地散开。',
+ mid:'柑橘调渐渐沉淀,沉香特有的烟熏神秘木质感缓缓显露。',
+ dry:'广藿香的泥土气息将沉香牢牢锁住,在每个人肌肤上呈现出不同的专属尾香。'},
+{name:'Pêche Moi',fam:'柔美果香花香调',notes:['黄桃','白玫瑰','醛香'],
+ top:'醛香特有的皂感透明气息清澈明亮地展开。',
+ mid:'黄桃毛绒般的多汁感与白玫瑰交叠,构成香甜柔美的花香中调。',
+ dry:'醛香明亮的余韵留在淡淡麝香之上,以洁净明媚的姿态收尾。'},
+{name:'Soleil Nude',fam:'花香东方调',notes:['橙花','依兰','香草'],
+ top:'橙花甜美性感的柑橘花香浓郁地铺展开来。',
+ mid:'依兰与茉莉扩展为奶油般的热带花香,为中调增添存在感。',
+ dry:'香草与吐纳豆与木质麝香一同沉淀,留下温暖性感的东方尾香。'},
+{name:'Citron',fam:'柑橘芳香调',notes:['清新橙子','罗勒','广藿香'],
+ top:'如同剥开新鲜橙子与橘子般苦甜交织的柑橘开场。',
+ mid:'罗勒叶清新辛辣的芳香气息为柑橘调增添活力,支撑起充满生气的中调。',
+ dry:'广藿香细腻的泥土气息性感地落在柑橘余韵之上。'},
+{name:'Young Rose',fam:'花香辛香调',notes:['玫瑰精油','粉胡椒','岩兰草'],
+ top:'橘子与粉胡椒辛辣而富有生气地跳跃绽放。',
+ mid:'玫瑰精油甜美绽放,与粉胡椒的微微刺激形成对比的中调。',
+ dry:'岩兰草清新自然的木质感轻柔锁住玫瑰的余韵。'},
+{name:'Freesia Dew',fam:'清新花香调',notes:['小苍兰','铃兰','青苹果'],
+ top:'如挂着露珠的青苹果般清爽,呈现清新的绿色果香开场。',
+ mid:'小苍兰与铃兰透明地交叠,构成澄澈纯净的花束中调。',
+ dry:'轻盈洁净的花香余韵留在白麝香之上,如微风拂过般自然。'},
+{name:'Voile de Nuit',fam:'花香麝香醛香调',notes:['醛香','紫罗兰','麝香'],
+ top:'醛香特有的皂感透明气息温柔散开,呈现细腻的初印象。',
+ mid:'紫罗兰的粉感柔和地与麝香提前相遇,模糊了中调与后调的界限。',
+ dry:'麝香沿着肌肤纹理长久留存,温暖而持久。'},
+{name:'May I Five',fam:'芳香花香调',notes:['丁香','桉树','黄葵'],
+ top:'桉树清凉的薄荷感清爽地率先散开。',
+ mid:'丁香洁净的花香与桉树平衡呼应,延续清爽感的中调。',
+ dry:'黄葵麝香轻盈落下,以舒适易穿的姿态收尾。'},
+{name:'Ivory Nuit',fam:'花香辛香麝香调',notes:['晚香玉','粉胡椒','白麝香'],
+ top:'粉胡椒辛辣闪烁的刺激感独特地跳跃开场。',
+ mid:'晚香玉浓郁奶油感的花香与无花果叶的绿意相遇,性感绽放的中调。',
+ dry:'白麝香温柔包裹晚香玉的余韵,留下深邃迷人的尾香。'},
+{name:'Jasmin Cuir',fam:'花香皮革调',notes:['茉莉','依兰','皮革'],
+ top:'吲哚含量较低的白茉莉清澈优雅地散开。',
+ mid:'依兰的奶油感包裹茉莉,鞣制皮革逐渐增添分量的转折中调。',
+ dry:'皮革与琥珀优雅地锁住茉莉的余韵,是男女皆宜的尾香。'},
+{name:'Dusky Fleur',fam:'果香花香琥珀调',notes:['桂花','甜桃','琥珀'],
+ top:'甜桃般的甜美与淡淡烟草叶气息一同散开,独特而迷人的开场。',
+ mid:'桂花浓郁的杏色花香与果香交织,渐渐加深为小众浓郁的中调。',
+ dry:'琥珀树脂般的暖意包裹桂花的余韵,留下悠长温暖的尾香。'},
+{name:'AVENQUA 25',fam:'海洋花香调',
+ story:'承载广安里海景的气息——数字\'25\'来自SCENTICA广安店的门牌地址。',
+ notes:['海洋调','莲花','白麝香'],
+ top:'破碎海浪的臭氧感与一丝咸咸海风清凉散开。',
+ mid:'莲花澄澈透明的花香在海洋调之上柔和绽放。',
+ dry:'白麝香将海洋气息清爽收束,留下清新持久的尾香。'},
+{name:'BRUTEA 12',fam:'美食木质琥珀调',
+ story:'承载田浦咖啡街风情的气息——数字\'12\'来自SCENTICA田浦店的门牌地址。',
+ notes:['咖啡','吐纳豆','安息香'],
+ top:'现磨咖啡苦醇浓郁的香气与香草般的甜意一同散开。',
+ mid:'吐纳豆干草般的甜意与咖啡的苦味达成平衡,化作柔和的美食调中调。',
+ dry:'安息香树脂般温暖凝固,留下温馨甜美的尾香。'},
+{name:'INKHIVE 21',fam:'熏香木质烟熏调',
+ story:'承载昭格洞韩屋书斋中研墨瞬间的气息——数字\'21\'来自SCENTICA昭格店的门牌地址。',
+ notes:['乳香','墨','广藿香'],
+ top:'黑胡椒的辛辣与熏香乳香如同砚台研墨般升腾而起。',
+ mid:'烟熏渐渐平息,雪松与檀香细腻的木质感逐渐加深,构成知性中调。',
+ dry:'如同陈年书斋中沉积的墨香,乳脂感檀香浓密悠长地留存。'},
+{name:'BEIJI 70',fam:'粉感肌肤麝香调',
+ story:'承载韩屋窗棂间阳光与温暖韩纸色泽的气息——数字\'70\'来自SCENTICA昭格店的门牌地址。',
+ notes:['米','黄葵','麝香'],
+ top:'刚蒸好的米饭般清香的蒸汽如奶泡般柔和散开,呈现透明的初印象。',
+ mid:'黄葵增添麝香般的暖意,如韩屋地板上的阳光般静静升温的粉感中调。',
+ dry:'麝香如第二层肌肤般定着,留下与肌肤本身一样持久的贴肤尾香。'},
+{name:'SAFLEAT 54',fam:'皮革木质花香调',
+ story:'承载汉南洞精致建筑与选品店街区风情的气息——数字\'54\'来自SCENTICA汉南店的门牌地址。',
+ notes:['番红花','含羞草','麂皮'],
+ top:'异域番红花皮革般的辛香与含羞草金黄的暖意一同散开。',
+ mid:'含羞草花香渗入天鹅绒般的麂皮,性感地加深为皮革中调。',
+ dry:'木质调牢牢锁住麂皮的质感,留下时尚持久的尾香。'}
+]
+};
 
 /* ===================== 앰비언트 무드 컬러 ===================== */
 const MOODS={
@@ -664,242 +877,401 @@ function setMood(m){
   document.documentElement.style.setProperty('--amb2',c[1]);
 }
 
-/* ===================== 설문 ===================== */
+/* ===================== 설문 (언어 무관: 아이콘/로직) ===================== */
 const QUESTIONS=[
-{title:'오늘, 향수를 찾는 이유는?',sub:'가장 가까운 하나를 골라주세요',cls:'single',opts:[
-  {i:'🌿',l:'나의 데일리 향',s:'매일 곁에 두고 싶은 부담 없는 향',fx:p=>p.use.d*2},
-  {i:'✨',l:'특별한 날의 향',s:'모임과 외출, 인상을 남기고 싶은 순간',fx:p=>p.use.o*2},
-  {i:'🎁',l:'소중한 사람의 선물',s:'마음을 대신 전할 한 병',fx:p=>p.use.g*2},
-  {i:'🔄',l:'기분 전환이 필요한 순간',s:'지친 하루에 산뜻한 리프레시가 되어줄 향',fx:p=>g(p,'ci')*1.2+g(p,'aq')*1.2+g(p,'fr')*1.2}
+{cls:'single',opts:[
+  {i:'🌿',fx:p=>p.use.d*2},
+  {i:'✨',fx:p=>p.use.o*2},
+  {i:'🎁',fx:p=>p.use.g*2},
+  {i:'🔄',fx:p=>g(p,'ci')*1.2+g(p,'aq')*1.2+g(p,'fr')*1.2}
 ]},
-{title:'눈을 감으면, 어디에 머물고 싶나요?',sub:'끌리는 장면 하나를 골라주세요',cls:'grid3',opts:[
-  {i:'🌧️',l:'비 갠 아침의 정원',s:'싱그러운 풀내음과 맑은 공기',mood:'fresh',fx:p=>g(p,'ci')*1.5+p.cl*1.5},
-  {i:'🌊',l:'한여름의 바닷가',s:'밀려오는 파도와 시원한 바람',mood:'aqua',fx:p=>g(p,'aq')*2.5+g(p,'ci')*1},
-  {i:'📖',l:'오래된 서재',s:'책장 사이 먹과 나무의 내음',mood:'incense',fx:p=>g(p,'in')*2+g(p,'wd')*1.5},
-  {i:'🧶',l:'포근한 니트의 품',s:'살결에 스미는 따뜻한 온기',mood:'musk',fx:p=>g(p,'mu')*2+g(p,'pw')*1.5},
-  {i:'☕',l:'오후의 카페',s:'갓 내린 커피와 달콤한 디저트',mood:'gourmand',fx:p=>g(p,'gm')*2.5+p.sw*.5},
-  {i:'💐',l:'만개한 꽃집',s:'가득 안긴 꽃다발의 향연',mood:'floral',fx:p=>g(p,'fl')*2},
-  {i:'🎉',l:'사람 북적이는 파티의 밤',s:'화려하고 생기 넘치는 사교의 순간',mood:'party',fx:p=>p.pr*1.3+g(p,'sp')*1.3+g(p,'le')*1}
+{cls:'grid3',opts:[
+  {i:'🌧️',mood:'fresh',fx:p=>g(p,'ci')*1.5+p.cl*1.5},
+  {i:'🌊',mood:'aqua',fx:p=>g(p,'aq')*2.5+g(p,'ci')*1},
+  {i:'📖',mood:'incense',fx:p=>g(p,'in')*2+g(p,'wd')*1.5},
+  {i:'🧶',mood:'musk',fx:p=>g(p,'mu')*2+g(p,'pw')*1.5},
+  {i:'☕',mood:'gourmand',fx:p=>g(p,'gm')*2.5+p.sw*.5},
+  {i:'💐',mood:'floral',fx:p=>g(p,'fl')*2},
+  {i:'🎉',mood:'party',fx:p=>p.pr*1.3+g(p,'sp')*1.3+g(p,'le')*1}
 ]},
-{title:'첫 만남, 어떤 인상에 끌리나요?',sub:'향수의 첫 향, 탑 노트의 취향입니다',opts:[
-  {i:'🍋',l:'톡 터지는 상큼함',s:'시트러스의 밝은 에너지',mood:'citrus',fx:p=>g(p,'ci')*1.5},
-  {i:'🍑',l:'무르익은 과일의 달콤함',s:'복숭아·망고 같은 프루티',mood:'fruity',fx:p=>g(p,'fr')*1.5},
-  {i:'🌸',l:'화사하게 피어나는 꽃',s:'로즈·피오니 같은 플로럴',mood:'floral',fx:p=>g(p,'fl')*1.5},
-  {i:'🫧',l:'갓 세탁한 듯한 깨끗함',s:'비누처럼 맑고 클린한 향',mood:'musk',fx:p=>p.cl*1.5+g(p,'mu')*.5},
-  {i:'🪵',l:'차분히 가라앉는 나무',s:'우디의 안정감 있는 무게',mood:'woody',fx:p=>g(p,'wd')*1.5},
-  {i:'🥃',l:'묵직하게 다가오는 무게감',s:'스파이시·앰버 같은 적당한 존재감',mood:'spicy',fx:p=>g(p,'sp')*1.5+p.pr*.7}
+{opts:[
+  {i:'🍋',mood:'citrus',fx:p=>g(p,'ci')*1.5},
+  {i:'🍑',mood:'fruity',fx:p=>g(p,'fr')*1.5},
+  {i:'🌸',mood:'floral',fx:p=>g(p,'fl')*1.5},
+  {i:'🫧',mood:'musk',fx:p=>p.cl*1.5+g(p,'mu')*.5},
+  {i:'🪵',mood:'woody',fx:p=>g(p,'wd')*1.5},
+  {i:'🥃',mood:'spicy',fx:p=>g(p,'sp')*1.5+p.pr*.7}
 ]},
-{title:'달콤함은, 어느 정도가 좋나요?',sub:'',cls:'single',opts:[
-  {i:'🍯',l:'충분히 달콤하게',s:'기분 좋아지는 스위트함이 좋아요',fx:p=>(3-Math.abs(3-p.sw))*1.5},
-  {i:'🌙',l:'은은하게 스치듯',s:'달콤함은 살짝만 느껴지면 충분해요',fx:p=>(3-Math.abs(1.5-p.sw))*1.5},
-  {i:'🍃',l:'달지 않게, 담백하게',s:'클린하거나 드라이한 쪽이 좋아요',fx:p=>(3-p.sw)*1.5},
-  {i:'🍫',l:'묵직하고 진하게 달콤하게',s:'오리엔탈·구르망처럼 짙은 단맛이 좋아요',fx:p=>(3-Math.abs(3-p.sw))*1+p.pr*1.2}
+{cls:'single',opts:[
+  {i:'🍯',fx:p=>(3-Math.abs(3-p.sw))*1.5},
+  {i:'🌙',fx:p=>(3-Math.abs(1.5-p.sw))*1.5},
+  {i:'🍃',fx:p=>(3-p.sw)*1.5},
+  {i:'🍫',fx:p=>(3-Math.abs(3-p.sw))*1+p.pr*1.2}
 ]},
-{title:'향의 존재감은 어떠면 좋을까요?',sub:'',cls:'single',opts:[
-  {i:'🕊️',l:'살결처럼 은은하게',s:'스치듯 가까이에서만 느껴지도록',fx:p=>(3-Math.abs(1-p.pr))*2},
-  {i:'🌤️',l:'기분 좋은 존재감',s:'과하지 않게, 그러나 분명하게',fx:p=>(3-Math.abs(2-p.pr))*2},
-  {i:'🔥',l:'확실한 나의 인장',s:'지나간 자리에 향이 기억되도록',fx:p=>(3-Math.abs(3-p.pr))*2}
+{cls:'single',opts:[
+  {i:'🕊️',fx:p=>(3-Math.abs(1-p.pr))*2},
+  {i:'🌤️',fx:p=>(3-Math.abs(2-p.pr))*2},
+  {i:'🔥',fx:p=>(3-Math.abs(3-p.pr))*2}
 ]},
-{title:'향수와 얼마나 친한가요?',sub:'',cls:'single',opts:[
-  {i:'🌱',l:'이제 알아가는 중',s:'향수는 아직 낯설고 궁금해요',fx:p=>(3-p.ni)*1.5},
-  {i:'🌷',l:'즐겨 뿌리는 편',s:'좋아하는 향이 몇 가지 있어요',fx:p=>p.ni>=1&&p.ni<=2?3:1},
-  {i:'🖤',l:'향을 수집하는 편',s:'남들과 다른 특별한 향을 찾아요',fx:p=>p.ni*1.5}
+{cls:'single',opts:[
+  {i:'🌱',fx:p=>(3-p.ni)*1.5},
+  {i:'🌷',fx:p=>p.ni>=1&&p.ni<=2?3:1},
+  {i:'🖤',fx:p=>p.ni*1.5}
 ]},
-{title:'이 향, 언제 곁에 두고 싶나요?',sub:'',cls:'single',opts:[
-  {i:'🌸',l:'봄과 여름',s:'가볍고 산뜻한 계절의 향',fx:p=>(p.se.includes('봄')+p.se.includes('여름'))*1},
-  {i:'🍂',l:'가을과 겨울',s:'깊고 따뜻한 계절의 향',fx:p=>(p.se.includes('가을')+p.se.includes('겨울'))*1},
-  {i:'♾️',l:'사계절 내내',s:'계절을 타지 않는 나만의 향',fx:p=>p.se.length===4?2:p.se.length===3?1:0}
+{cls:'single',opts:[
+  {i:'🌸',fx:p=>(p.se.includes('봄')+p.se.includes('여름'))*1},
+  {i:'🍂',fx:p=>(p.se.includes('가을')+p.se.includes('겨울'))*1},
+  {i:'♾️',fx:p=>p.se.length===4?2:p.se.length===3?1:0}
 ]}
 ];
+
+/* ===================== 설문 표시 텍스트 (언어별) ===================== */
+const QT={
+ko:[
+{title:'오늘, 향수를 찾는 이유는?',sub:'가장 가까운 하나를 골라주세요',opts:[
+  {l:'나의 데일리 향',s:'매일 곁에 두고 싶은 부담 없는 향'},
+  {l:'특별한 날의 향',s:'모임과 외출, 인상을 남기고 싶은 순간'},
+  {l:'소중한 사람의 선물',s:'마음을 대신 전할 한 병'},
+  {l:'기분 전환이 필요한 순간',s:'지친 하루에 산뜻한 리프레시가 되어줄 향'}
+]},
+{title:'눈을 감으면, 어디에 머물고 싶나요?',sub:'끌리는 장면 하나를 골라주세요',opts:[
+  {l:'비 갠 아침의 정원',s:'싱그러운 풀내음과 맑은 공기'},
+  {l:'한여름의 바닷가',s:'밀려오는 파도와 시원한 바람'},
+  {l:'오래된 서재',s:'책장 사이 먹과 나무의 내음'},
+  {l:'포근한 니트의 품',s:'살결에 스미는 따뜻한 온기'},
+  {l:'오후의 카페',s:'갓 내린 커피와 달콤한 디저트'},
+  {l:'만개한 꽃집',s:'가득 안긴 꽃다발의 향연'},
+  {l:'사람 북적이는 파티의 밤',s:'화려하고 생기 넘치는 사교의 순간'}
+]},
+{title:'첫 만남, 어떤 인상에 끌리나요?',sub:'향수의 첫 향, 탑 노트의 취향입니다',opts:[
+  {l:'톡 터지는 상큼함',s:'시트러스의 밝은 에너지'},
+  {l:'무르익은 과일의 달콤함',s:'복숭아·망고 같은 프루티'},
+  {l:'화사하게 피어나는 꽃',s:'로즈·피오니 같은 플로럴'},
+  {l:'갓 세탁한 듯한 깨끗함',s:'비누처럼 맑고 클린한 향'},
+  {l:'차분히 가라앉는 나무',s:'우디의 안정감 있는 무게'},
+  {l:'묵직하게 다가오는 무게감',s:'스파이시·앰버 같은 적당한 존재감'}
+]},
+{title:'달콤함은, 어느 정도가 좋나요?',sub:'',opts:[
+  {l:'충분히 달콤하게',s:'기분 좋아지는 스위트함이 좋아요'},
+  {l:'은은하게 스치듯',s:'달콤함은 살짝만 느껴지면 충분해요'},
+  {l:'달지 않게, 담백하게',s:'클린하거나 드라이한 쪽이 좋아요'},
+  {l:'묵직하고 진하게 달콤하게',s:'오리엔탈·구르망처럼 짙은 단맛이 좋아요'}
+]},
+{title:'향의 존재감은 어떠면 좋을까요?',sub:'',opts:[
+  {l:'살결처럼 은은하게',s:'스치듯 가까이에서만 느껴지도록'},
+  {l:'기분 좋은 존재감',s:'과하지 않게, 그러나 분명하게'},
+  {l:'확실한 나의 인장',s:'지나간 자리에 향이 기억되도록'}
+]},
+{title:'향수와 얼마나 친한가요?',sub:'',opts:[
+  {l:'이제 알아가는 중',s:'향수는 아직 낯설고 궁금해요'},
+  {l:'즐겨 뿌리는 편',s:'좋아하는 향이 몇 가지 있어요'},
+  {l:'향을 수집하는 편',s:'남들과 다른 특별한 향을 찾아요'}
+]},
+{title:'이 향, 언제 곁에 두고 싶나요?',sub:'',opts:[
+  {l:'봄과 여름',s:'가볍고 산뜻한 계절의 향'},
+  {l:'가을과 겨울',s:'깊고 따뜻한 계절의 향'},
+  {l:'사계절 내내',s:'계절을 타지 않는 나만의 향'}
+]}
+],
+en:[
+{title:'What brings you to perfume today?',sub:'Choose the one that feels closest to you',opts:[
+  {l:'My everyday scent',s:'An effortless scent to keep close every day'},
+  {l:'A scent for special days',s:'For gatherings and outings — moments to leave an impression'},
+  {l:'A gift for someone dear',s:"A bottle that speaks what words can't"},
+  {l:'A moment that needs a lift',s:'A refreshing scent for a tiring day'}
+]},
+{title:'Close your eyes — where would you like to stay?',sub:'Pick the scene that draws you in',opts:[
+  {l:'A garden after the rain',s:'Fresh green air and the scent of morning dew'},
+  {l:'A midsummer beach',s:'Rolling waves and a cool breeze'},
+  {l:'An old library',s:'Ink and wood scent drifting between the shelves'},
+  {l:'Wrapped in a soft knit sweater',s:'Warmth that seeps gently into the skin'},
+  {l:'An afternoon café',s:'Freshly brewed coffee and sweet desserts'},
+  {l:'A flower shop in full bloom',s:'An armful of bouquets, a feast of scent'},
+  {l:'A lively night at a party',s:'Glamorous, vibrant moments among people'}
+]},
+{title:'At first meeting, what impression draws you in?',sub:"This is about your taste in top notes — a perfume's first breath",opts:[
+  {l:'A bright citrus burst',s:'The vivid energy of citrus'},
+  {l:'The sweetness of ripe fruit',s:'Fruity notes like peach and mango'},
+  {l:'A flower blooming brightly',s:'Florals like rose and peony'},
+  {l:'The freshness of just-washed linen',s:'A clean, soap-like scent'},
+  {l:'Wood settling calmly',s:'The grounded weight of woody notes'},
+  {l:'A weight that draws near',s:'A moderate presence like spice and amber'}
+]},
+{title:'How much sweetness feels right to you?',sub:'',opts:[
+  {l:'Sweet enough to feel good',s:'A sweetness that lifts my mood'},
+  {l:'Just a soft touch',s:'A hint of sweetness is enough'},
+  {l:'Not sweet, just clean',s:'I prefer clean or dry notes'},
+  {l:'Deep and richly sweet',s:'A dense sweetness like oriental or gourmand notes'}
+]},
+{title:'How present do you want your scent to feel?',sub:'',opts:[
+  {l:'As soft as skin itself',s:'Felt only up close, like a whisper'},
+  {l:'A pleasant presence',s:'Not too much, but unmistakably there'},
+  {l:'A confident signature',s:"A scent remembered long after I've gone"}
+]},
+{title:'How familiar are you with perfume?',sub:'',opts:[
+  {l:'Just getting to know it',s:'Perfume still feels new and intriguing'},
+  {l:'I wear it often',s:'I already have a few favorites'},
+  {l:'I collect fragrances',s:'I look for scents that stand apart from the rest'}
+]},
+{title:'When would you like to keep this scent close?',sub:'',opts:[
+  {l:'Spring and summer',s:'A light, fresh seasonal scent'},
+  {l:'Autumn and winter',s:'A deep, warm seasonal scent'},
+  {l:'All year round',s:'A signature scent that knows no season'}
+]}
+],
+zh:[
+{title:'今天,你为什么想要一款香水?',sub:'请选择最贴近你此刻心情的一项',opts:[
+  {l:'我的日常香',s:'想每天陪伴自己的、没有负担的香气'},
+  {l:'特别日子的香气',s:'聚会与外出时,想留下印象的瞬间'},
+  {l:'送给珍视之人的礼物',s:'一瓶代替心意传达的香水'},
+  {l:'需要转换心情的时刻',s:'在疲惫的一天里带来清爽转变的香气'}
+]},
+{title:'闭上眼睛,你想停留在哪里?',sub:'请选择最吸引你的一个画面',opts:[
+  {l:'雨后清晨的花园',s:'清新的草木气息与洁净空气'},
+  {l:'盛夏的海边',s:'拍打而来的海浪与凉爽的风'},
+  {l:'古老的书房',s:'书架间墨与木的气息'},
+  {l:'温暖针织衫的怀抱',s:'渗入肌肤的暖意'},
+  {l:'午后的咖啡馆',s:'现煮咖啡与甜蜜的甜点'},
+  {l:'繁花盛开的花店',s:'满怀花束的香气盛宴'},
+  {l:'人声鼎沸的派对之夜',s:'华丽而充满生气的社交时刻'}
+]},
+{title:'初次相遇,你会被哪种印象吸引?',sub:'这是关于香水前调、第一缕香气的喜好',opts:[
+  {l:'清爽跳跃的果香',s:'柑橘明亮的活力'},
+  {l:'成熟果实的甜美',s:'桃子、芒果般的果香'},
+  {l:'明艳绽放的花朵',s:'玫瑰、牡丹般的花香'},
+  {l:'如刚洗涤般的洁净感',s:'如香皂般清澈干净的气息'},
+  {l:'沉静内敛的木质',s:'木质调带来的安定重量'},
+  {l:'沉稳靠近的厚重感',s:'辛香、琥珀般恰到好处的存在感'}
+]},
+{title:'你喜欢怎样程度的甜美?',sub:'',opts:[
+  {l:'足够甜美',s:'喜欢让心情愉悦的甜感'},
+  {l:'若隐若现地掠过',s:'甜味只需微微感受到就足够'},
+  {l:'不甜、清爽淡雅',s:'偏爱清透或干燥的气息'},
+  {l:'浓郁醇厚的甜美',s:'喜欢东方调、美食调般浓郁的甜味'}
+]},
+{title:'你希望香气的存在感如何?',sub:'',opts:[
+  {l:'如肌肤般若有似无',s:'只在靠近时才能察觉'},
+  {l:'恰到好处的存在感',s:'不过分张扬,却清晰可辨'},
+  {l:'鲜明的自我印记',s:'让香气在经过之处被人记住'}
+]},
+{title:'你与香水有多熟悉?',sub:'',opts:[
+  {l:'刚刚开始了解',s:'香水对我来说还很陌生又好奇'},
+  {l:'经常使用香水',s:'已经有几款喜欢的香气'},
+  {l:'喜欢收藏香水',s:'总在寻找与众不同的独特香气'}
+]},
+{title:'你希望这款香气何时陪伴你?',sub:'',opts:[
+  {l:'春天与夏天',s:'轻盈清爽的季节香气'},
+  {l:'秋天与冬天',s:'深邃温暖的季节香气'},
+  {l:'四季皆宜',s:'不受季节限制的专属香气'}
+]}
+]
+};
+
+/* ===================== 가챠 이벤트 데이터 ===================== */
+/* 언어 무관 설정 (확률/색상/애니메이션) */
+const GACHA_CONFIG=[
+{rank:1,weight:1,grad:'linear-gradient(135deg,#F8E3A1,#C6A550)',gink:'#5b4a1f',color:'#C6A550',
+ emojis:['🎉','🏆','✨','⭐'],confetti:{count:52,dist:220,dur:2200}},
+{rank:2,weight:7,grad:'linear-gradient(135deg,#F2F2F2,#BDBDBD)',gink:'#4a4a4a',color:'#BDBDBD',
+ emojis:['🎊','🥈','✨'],confetti:{count:38,dist:180,dur:1900}},
+{rank:3,weight:15,grad:'linear-gradient(135deg,#E3C2A0,#B07C4F)',gink:'#4a2f18',color:'#B07C4F',
+ emojis:['🎊','🥉','✨'],confetti:{count:28,dist:150,dur:1650}},
+{rank:4,weight:25,grad:'linear-gradient(135deg,#DADADA,#9E9E9E)',gink:'#3a3a3a',color:'#9E9E9E',
+ emojis:['🎁','✨'],confetti:{count:18,dist:120,dur:1350}},
+{rank:5,weight:52,grad:'linear-gradient(135deg,#F5F5F5,#DCDCDC)',gink:'#3a3a3a',color:'#DCDCDC',
+ emojis:['✨'],confetti:{count:10,dist:90,dur:1100}}
+];
+/* 언어별 텍스트 (tag는 브랜딩 상 영어 고정) */
+const GACHA_TEXT={
+ko:[
+ {label:'1등',tag:'GRAND PRIZE',desc:'향수 15ml 무료 증정',cheer:'🎉 GRAND PRIZE 당첨을 축하합니다!'},
+ {label:'2등',tag:'SPECIAL PRIZE',desc:'핸드퍼퓸 40ml 무료 증정',cheer:'🎊 SPECIAL PRIZE에 당첨되셨습니다!'},
+ {label:'3등',tag:'LUCKY PRIZE',desc:'핸드크림 50ml 무료 증정',cheer:'🍀 LUCKY PRIZE 당첨을 축하합니다!'},
+ {label:'4등',tag:'PRIZE',desc:'핸드퍼퓸 4종 1ml 디스커버리 세트 무료 증정',cheer:'🎁 선물이 준비되었습니다!'},
+ {label:'5등',tag:'PRIZE',desc:'향수 2ml 무료 증정',cheer:'✨ 참여해주셔서 감사합니다!'}
+],
+en:[
+ {label:'1st Place',tag:'GRAND PRIZE',desc:'Free 15ml Perfume',cheer:'🎉 Congratulations on winning the GRAND PRIZE!'},
+ {label:'2nd Place',tag:'SPECIAL PRIZE',desc:'Free 40ml Hand Perfume',cheer:"🎊 You've won the SPECIAL PRIZE!"},
+ {label:'3rd Place',tag:'LUCKY PRIZE',desc:'Free 50ml Hand Cream',cheer:'🍀 Congratulations on the LUCKY PRIZE!'},
+ {label:'4th Place',tag:'PRIZE',desc:'Free 4-Piece 1ml Hand Perfume Discovery Set',cheer:'🎁 A gift is ready for you!'},
+ {label:'5th Place',tag:'PRIZE',desc:'Free 2ml Perfume',cheer:'✨ Thank you for playing!'}
+],
+zh:[
+ {label:'一等奖',tag:'GRAND PRIZE',desc:'免费赠送15ml香水',cheer:'🎉 恭喜您获得GRAND PRIZE大奖!'},
+ {label:'二等奖',tag:'SPECIAL PRIZE',desc:'免费赠送40ml护手香水',cheer:'🎊 恭喜获得SPECIAL PRIZE特别奖!'},
+ {label:'三等奖',tag:'LUCKY PRIZE',desc:'免费赠送50ml护手霜',cheer:'🍀 恭喜获得LUCKY PRIZE幸运奖!'},
+ {label:'四等奖',tag:'PRIZE',desc:'免费赠送4款1ml护手香水体验套装',cheer:'🎁 您的礼物已准备好!'},
+ {label:'五等奖',tag:'PRIZE',desc:'免费赠送2ml香水',cheer:'✨ 感谢您的参与!'}
+]
+};
+const SUSPENSE_MSGS={
+ko:['행운의 캡슐을 고르는 중...','두근두근, 캡슐이 움직입니다...','곧 캡슐이 나옵니다...'],
+en:['Choosing your lucky capsule...','Here it comes, the capsule is moving...','Almost there...'],
+zh:['正在挑选幸运胶囊...','心跳加速,胶囊正在转动...','马上就要出来了...']
+};
+const LOAD_MSGS={
+ko:['취향의 결을 읽고 있습니다','노트를 하나씩 고르고 있습니다','잔향의 온도를 맞추고 있습니다'],
+en:['Reading the texture of your taste','Selecting each note, one by one','Calibrating the warmth of your dry down'],
+zh:['正在解读你的气味喜好','逐一挑选适合的香调','正在调校尾香的温度']
+};
+
+/* ===================== UI 공통 텍스트 ===================== */
+const UI={
+ko:{
+  intro:{eyebrow:'PERFUME CURATION',
+    titleEm:'일상에 스며드는 향기',titleMain:'당신의 취향을 찾아드립니다',
+    sub:'일곱 번의 터치로 취향을 읽고,<br>센티카의 향 스물네 가지 중 세 가지를 골라드립니다.',
+    storeLabel:'방문하신 매장',storePopup:'팝업·기타',storePrefix:'센티카',btnStart:'여정 시작하기'},
+  quiz:{sep:'—',back:'←'},
+  result:{eyebrow:'YOUR CURATION',title:'당신을 위한 세 가지 향',
+    subStore:s=>`센티카 ${s}에서 만날 수 있는 큐레이션입니다`,
+    subDefault:'센티카가 고른 오늘의 큐레이션입니다',
+    ranks:['베스트 매치','두 번째 향','세 번째 향'],
+    lineBadge:l=>`${l} 라인`,exclBadge:s=>`${s} 매장 단독`,
+    jTop:'첫인상',jMid:'피어남',jDry:'잔향',
+    noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'이 화면을 직원에게 보여주세요',noticeSub:'추천드린 순서대로 시향을 도와드립니다',
+    gachaCtaLabel:'🎰 가챠 뽑기 이벤트 참여하기',gachaCtaSub:'진단 완료 기념, 캡슐 뽑고 등수 확인하기 →',
+    retry:'처음부터 다시하기',
+    ctaLabel:'퍼퓸 3종 샘플 키트 무료 증정',ctaSub:'센티카 이벤트 페이지로 이동 →'},
+  gacha:{step:'GACHA EVENT',eyebrow:'LUCKY DRAW',title:'행운의 캡슐 뽑기',
+    sub:'버튼을 눌러 캡슐을 뽑고, 오늘의 등수를 확인해보세요',
+    lockBadge:"TODAY'S LIMIT",lockTitle:'오늘은 이미 참여하셨습니다',
+    lockSub:(label,desc,stamp)=>`${stamp?stamp+' 뽑음 · ':''}당첨: ${label}${desc?' · '+desc:''} · 가챠 이벤트는 하루에 한 번만 참여할 수 있어요. 내일 다시 도전해주세요!`,
+    pull:'캡슐 뽑기',pullDone:'오늘의 참여 완료',
+    noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'이 화면을 직원에게 보여주세요',noticeSub:'등수에 맞는 사은품을 안내드립니다',
+    win:l=>`${l} 당첨`,timeLabel:'뽑은 시각 · '},
+  store:{'광안':'광안','전포':'전포','한남':'한남','소격':'소격'},
+  line:{'시그니처':'시그니처','플라워':'플라워'},
+  psych:{eyebrow:'오늘의 감정 진단',
+    lead:'오늘 당신의 마음을 가만히 들여다보면,',
+    q1:['잔잔하지만 확실한 나만의 안정감을 찾고 있었고,','특별한 순간, 잊히지 않을 인상을 남기고 싶었고,','말로 다 못한 마음을 향으로 대신 전하고 싶었고,','지친 하루 끝에 산뜻하게 나를 되찾고 싶었고,'],
+    q2:['머릿속을 맑게 비우고 싶은 순간을 그리고 있었고,','탁 트인 자유로움에 대한 갈증이 있었고,','고요히 나 자신에게 집중하고 싶었고,','따뜻한 위로가 필요한 순간이었고,','작은 행복과 달콤한 보상이 필요했고,','스스로를 한껏 피워내고 싶었고,','생기와 사교의 에너지를 원하고 있었고,'],
+    q4:['기분을 밝혀줄 확실한 다정함이 필요했고,','과하지 않은, 살짝의 다정함이면 충분했고,','꾸밈없이 담백한 진심을 원했고,','깊고 진한 위로를 원하는 마음이었고,'],
+    q5:['존재감은 굳이 드러내지 않아도 괜찮다는 편안함을 원했어요.','과하지 않지만 분명하게, 나를 알아봐주길 바라는 마음이었어요.','지나간 자리에 확실히 나를 남기고 싶은 자신감이 있었어요.'],
+    closing:name=>`그 모든 감정이 향으로 옮겨졌을 때, 가장 먼저 응답한 향이 바로 <strong>${name}</strong>이었습니다. 오늘의 기분과 정확히 닿아있는, 지금 당신을 위한 향이에요.`}
+},
+en:{
+  intro:{eyebrow:'PERFUME CURATION',
+    titleEm:'A Scent Woven Into Everyday Life',titleMain:"We'll Discover What Suits You",
+    sub:"Seven simple touches to read your taste,<br>and we'll choose three from Scentica's twenty-four fragrances.",
+    storeLabel:'Store You Visited',storePopup:'Pop-up · Other',storePrefix:'SCENTICA',btnStart:'Begin the Journey'},
+  quiz:{sep:'of',back:'←'},
+  result:{eyebrow:'YOUR CURATION',title:'Three Scents, Made for You',
+    subStore:s=>`A curation available at SCENTICA ${s}`,
+    subDefault:"Scentica's curation for you today",
+    ranks:['Best Match','Second Scent','Third Scent'],
+    lineBadge:l=>`${l} Line`,exclBadge:s=>`${s} Exclusive`,
+    jTop:'Opening',jMid:'Heart',jDry:'Dry Down',
+    noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'Please show this screen to our staff',noticeSub:"We'll guide your sampling in the recommended order",
+    gachaCtaLabel:'🎰 Join the Gacha Draw Event',gachaCtaSub:'To celebrate your diagnosis, pull a capsule and check your prize →',
+    retry:'Start Over',
+    ctaLabel:'Free 3-Piece Perfume Sample Kit',ctaSub:'Go to the Scentica event page →'},
+  gacha:{step:'GACHA EVENT',eyebrow:'LUCKY DRAW',title:'Lucky Capsule Draw',
+    sub:'Press the button to pull a capsule and see today’s prize',
+    lockBadge:"TODAY'S LIMIT",lockTitle:"You've already played today",
+    lockSub:(label,desc,stamp)=>`${stamp?'Drawn at '+stamp+' · ':''}Result: ${label}${desc?' · '+desc:''} · The gacha draw is limited to once a day. Please try again tomorrow!`,
+    pull:'Pull a Capsule',pullDone:"Today's Draw Complete",
+    noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'Please show this screen to our staff',noticeSub:"We'll guide you to the gift matching your prize",
+    win:l=>`${l}`,timeLabel:'Drawn at · '},
+  store:{'광안':'Gwangan','전포':'Jeonpo','한남':'Hannam','소격':'Sogyeok'},
+  line:{'시그니처':'Signature','플라워':'Flower'},
+  psych:{eyebrow:"TODAY'S MOOD READ",
+    lead:"Take a closer look at how you're feeling today:",
+    q1:['you were looking for a quiet but unmistakable sense of your own stability,',"you wanted to leave an impression that wouldn't be forgotten,","you wanted a scent to carry the words you couldn't quite say,",'you wanted to feel refreshed and like yourself again after a tiring day,'],
+    q2:['you were picturing a moment of clearing your mind completely,','you were craving wide-open freedom,','you wanted to sit quietly with yourself,','you needed a warm, comforting embrace,','you needed a small happiness, a sweet little reward,','you wanted to bloom fully, exactly as yourself,','you were craving energy and connection with others,'],
+    q4:['you needed a clear, mood-lifting sweetness,','a touch of sweetness, nothing more, was already enough,','you wanted honesty without embellishment,','you wanted comfort that ran deep and rich,'],
+    q5:['and you were comfortable letting your presence stay unspoken.','and you wanted to be noticed — not loudly, but clearly.','and you wanted to leave a confident mark wherever you went.'],
+    closing:name=>`When every one of those feelings was translated into scent, <strong>${name}</strong> was the first to answer. It's the fragrance that matches exactly how you feel right now.`}
+},
+zh:{
+  intro:{eyebrow:'PERFUME CURATION',
+    titleEm:'融入日常的香气',titleMain:'为你寻回专属的气味喜好',
+    sub:'只需轻触七次,读懂你的喜好,<br>从SCENTICA24款香气中,为你甄选三款。',
+    storeLabel:'到访门店',storePopup:'快闪店·其他',storePrefix:'SCENTICA',btnStart:'开启气味之旅'},
+  quiz:{sep:'/',back:'←'},
+  result:{eyebrow:'YOUR CURATION',title:'为你甄选的三款香气',
+    subStore:s=>`可在SCENTICA ${s}店体验的香氛甄选`,
+    subDefault:'SCENTICA为你精选的今日香氛',
+    ranks:['最佳匹配','第二支香','第三支香'],
+    lineBadge:l=>`${l}系列`,exclBadge:s=>`${s}店专属`,
+    jTop:'前调',jMid:'中调',jDry:'尾调',
+    noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'请将此页面出示给店员',noticeSub:'我们将按照推荐顺序为您试香',
+    gachaCtaLabel:'🎰 参与扭蛋抽奖活动',gachaCtaSub:'完成诊断纪念,抽取胶囊查看中奖等级 →',
+    retry:'重新开始',
+    ctaLabel:'免费赠送3件装香水试用套装',ctaSub:'前往SCENTICA活动页面 →'},
+  gacha:{step:'GACHA EVENT',eyebrow:'LUCKY DRAW',title:'幸运胶囊抽取',
+    sub:'点击按钮抽取胶囊,查看今日中奖等级',
+    lockBadge:"TODAY'S LIMIT",lockTitle:'您今天已参与过了',
+    lockSub:(label,desc,stamp)=>`${stamp?stamp+' 抽取 · ':''}中奖:${label}${desc?' · '+desc:''} · 扭蛋活动每天限参与一次,请明天再来挑战!`,
+    pull:'抽取胶囊',pullDone:'今日已参与',
+    noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'请将此页面出示给店员',noticeSub:'我们将为您介绍对应等级的赠品',
+    win:l=>`中奖:${l}`,timeLabel:'抽取时间 · '},
+  store:{'광안':'广安','전포':'田浦','한남':'汉南','소격':'昭格'},
+  line:{'시그니처':'签名','플라워':'花语'},
+  psych:{eyebrow:'今日情绪解读',
+    lead:'仔细感受一下你今天的心情:',
+    q1:['你想要的是一种安稳却明确的自我感、','你想在特别的时刻留下难忘的印象、','你想用香气代替说不出口的心意、','你想在疲惫的一天后重新找回清爽的自己、'],
+    q2:['你渴望的是让思绪彻底放空的瞬间、','你渴望的是无拘无束的自由、','你想安静地专注于自己、','你需要的是温暖的安慰、','你需要一点小确幸与甜蜜的犒赏、','你想让自己尽情绽放、','你渴望的是活力与社交的能量、'],
+    q4:['你需要能点亮心情的明确甜感、','一点点甜意就已足够、','你想要的是不加修饰的真实、','你想要的是浓郁而深刻的慰藉、'],
+    q5:['你希望存在感无需刻意展现也没关系。','你希望被注意到——不张扬,但清晰可辨。','你想在经过之处,留下自信的印记。'],
+    closing:name=>`当这些情绪都化作气味时,第一个作出回应的正是 <strong>${name}</strong>。这正是此刻最贴合你心情的香气。`}
+}
+};
 
 /* ===================== 상태 & 화면 전환 ===================== */
 const $=id=>document.getElementById(id);
 let store=null, step=0, answers=[];
+let LANG=localStorage.getItem('scentica_lang')||'ko';
+let lastResult=null; /* {top3,minS,maxS} 캐시 — 언어 전환 시 재추첨 없이 다시 그리기 위함 */
+let lastGachaIndex=null, lastGachaStamp=null;
 
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   const el=$(id); el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
 }
 
-/* ===================== 가챠 이벤트 ===================== */
-const GACHA=[
-{rank:1,label:'1등',tag:'GRAND PRIZE',desc:'향수 15ml 무료 증정',weight:1,grad:'linear-gradient(135deg,#F8E3A1,#C6A550)',gink:'#5b4a1f',color:'#C6A550',
- cheer:'🎉 GRAND PRIZE 당첨을 축하합니다!',emojis:['🎉','🏆','✨','⭐'],confetti:{count:52,dist:220,dur:2200}},
-{rank:2,label:'2등',tag:'SPECIAL PRIZE',desc:'핸드퍼퓸 40ml 무료 증정',weight:7,grad:'linear-gradient(135deg,#F2F2F2,#BDBDBD)',gink:'#4a4a4a',color:'#BDBDBD',
- cheer:'🎊 SPECIAL PRIZE에 당첨되셨습니다!',emojis:['🎊','🥈','✨'],confetti:{count:38,dist:180,dur:1900}},
-{rank:3,label:'3등',tag:'LUCKY PRIZE',desc:'핸드크림 50ml 무료 증정',weight:15,grad:'linear-gradient(135deg,#E3C2A0,#B07C4F)',gink:'#4a2f18',color:'#B07C4F',
- cheer:'🍀 LUCKY PRIZE 당첨을 축하합니다!',emojis:['🎊','🥉','✨'],confetti:{count:28,dist:150,dur:1650}},
-{rank:4,label:'4등',tag:'PRIZE',desc:'핸드퍼퓸 4종 1ml 디스커버리 세트 무료 증정',weight:25,grad:'linear-gradient(135deg,#DADADA,#9E9E9E)',gink:'#3a3a3a',color:'#9E9E9E',
- cheer:'🎁 선물이 준비되었습니다!',emojis:['🎁','✨'],confetti:{count:18,dist:120,dur:1350}},
-{rank:5,label:'5등',tag:'PRIZE',desc:'향수 2ml 무료 증정',weight:52,grad:'linear-gradient(135deg,#F5F5F5,#DCDCDC)',gink:'#3a3a3a',color:'#DCDCDC',
- cheer:'✨ 참여해주셔서 감사합니다!',emojis:['✨'],confetti:{count:10,dist:90,dur:1100}}
-];
-const SUSPENSE_MSGS=['행운의 캡슐을 고르는 중...','두근두근, 캡슐이 움직입니다...','곧 캡슐이 나옵니다...'];
-const GACHA_LOCK_KEY='scentica_gacha_lock';
-function todayStr(){
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+/* ===================== 언어 전환 ===================== */
+function setLang(lang){
+  LANG=lang;
+  try{ localStorage.setItem('scentica_lang',lang); }catch(e){}
+  document.documentElement.lang=lang==='ko'?'ko':lang==='zh'?'zh':'en';
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+  refreshUI();
 }
-function nowStamp(){
-  const d=new Date();
-  const pad=n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-function getGachaLock(){
-  try{
-    const raw=localStorage.getItem(GACHA_LOCK_KEY);
-    if(!raw)return null;
-    const data=JSON.parse(raw);
-    return data.date===todayStr()?data:null;
-  }catch(e){ return null; }
-}
-function setGachaLock(rank,stamp){
-  try{ localStorage.setItem(GACHA_LOCK_KEY,JSON.stringify({date:todayStr(),rank,stamp})); }catch(e){}
-}
-function applyGachaLock(){
-  const lock=getGachaLock();
-  const notice=$('gLockNotice'), pull=$('btnPull');
-  if(lock){
-    const gg=GACHA.find(x=>x.rank===lock.rank);
-    const stampLabel=lock.stamp?`${lock.stamp} 뽑음 · `:'';
-    $('gLockSub').textContent=`${stampLabel}당첨: ${lock.rank}등${gg?' · '+gg.desc:''} · 가챠 이벤트는 하루에 한 번만 참여할 수 있어요. 내일 다시 도전해주세요!`;
-    notice.style.display='';
-    pull.disabled=true; pull.textContent='오늘의 참여 완료';
-    gachaDrawn=true;
-  }else{
-    notice.style.display='none';
-    pull.textContent='캡슐 뽑기';
-    if(!gachaBusy){ pull.disabled=false; gachaDrawn=false; }
-  }
-}
-function burstConfetti(g){
-  const layer=$('confettiLayer'); layer.innerHTML='';
-  const {count,dist,dur}=g.confetti;
-  for(let i=0;i<count;i++){
-    const s=document.createElement('span');
-    s.className='confetti-piece';
-    s.textContent=g.emojis[i%g.emojis.length];
-    const spread=(Math.random()*2-1)*dist;
-    const rise=-(dist*0.5+Math.random()*dist*0.7);
-    const rot=(Math.random()*720-360).toFixed(0);
-    const pdur=(dur*(0.75+Math.random()*0.5)).toFixed(0);
-    const delay=(Math.random()*220).toFixed(0);
-    s.style.setProperty('--dx',spread.toFixed(0)+'px');
-    s.style.setProperty('--dy',rise.toFixed(0)+'px');
-    s.style.setProperty('--rot',rot+'deg');
-    s.style.setProperty('--dur',pdur+'ms');
-    s.style.setProperty('--delay',delay+'ms');
-    s.style.fontSize=(14+Math.random()*14)+'px';
-    layer.appendChild(s);
-  }
-  setTimeout(()=>{ layer.innerHTML=''; },dur+700);
-}
-function pickGacha(){
-  const total=GACHA.reduce((a,g)=>a+g.weight,0);
-  let r=Math.random()*total;
-  for(const g of GACHA){ if(r<g.weight)return g; r-=g.weight; }
-  return GACHA[GACHA.length-1];
-}
-function fillDome(){
-  const box=$('domeCapsulesSvg'); if(box.dataset.filled)return; box.dataset.filled='1';
-  const cols=GACHA.map(g=>g.color);
-  let html='';
-  for(let i=0;i<16;i++){
-    const c=cols[i%cols.length];
-    const ang=Math.random()*Math.PI*2, rad=Math.sqrt(Math.random())*66;
-    const x=(118+Math.cos(ang)*rad).toFixed(1), y=(94+Math.sin(ang)*rad*0.86).toFixed(1);
-    const phase=(Math.random()*3).toFixed(2);
-    html+=`<g>
-      <animateTransform attributeName="transform" type="translate" values="${x} ${y}; ${x} ${(y-4).toFixed(1)}; ${x} ${y}" dur="3s" begin="-${phase}s" repeatCount="indefinite"/>
-      <circle r="9" fill="${c}"/>
-      <path d="M -9 0 A 9 9 0 0 1 9 0 Z" fill="#fff" fill-opacity=".55"/>
-      <rect x="-9" y="-0.6" width="18" height="1.2" fill="#000" fill-opacity=".18"/>
-      <circle cx="-3" cy="-3" r="2" fill="#fff" fill-opacity=".85"/>
-    </g>`;
-  }
-  box.innerHTML=html;
-}
-let gachaDrawn=false, gachaBusy=false;
-$('btnPull').addEventListener('click',()=>{
-  if(gachaBusy||gachaDrawn||getGachaLock())return;
-  gachaBusy=true; $('btnPull').disabled=true;
-  const susp=$('gSuspense'), mach=$('machine');
-  susp.textContent=SUSPENSE_MSGS[0];
-  mach.classList.add('shake-slow');
-  setTimeout(()=>{
-    mach.classList.remove('shake-slow'); mach.classList.add('shake');
-    susp.textContent=SUSPENSE_MSGS[1];
-  },1300);
-  setTimeout(()=>{
-    mach.classList.remove('shake');
-    susp.textContent=SUSPENSE_MSGS[2];
-  },2900);
-  setTimeout(()=>{ susp.innerHTML='&nbsp;'; dropCapsule(); },3400);
+document.querySelectorAll('.lang-btn').forEach(b=>{
+  b.addEventListener('click',()=>setLang(b.dataset.lang));
 });
-function dropCapsule(){
-  const g=pickGacha();
-  const slot=$('capsuleSlot');
-  slot.innerHTML=`<div class="capsule falling" style="--capcolor:${g.color}">
-    <div class="cap-top"></div><div class="cap-bot"></div><div class="cap-seam"></div><div class="cap-shine"></div>
-  </div>`;
-  const cap=slot.querySelector('.capsule');
-  setTimeout(()=>{
-    cap.classList.add('landed');
-    setTimeout(()=>{
-      cap.classList.add('open');
-      setTimeout(()=>{ showGachaResult(g); },650);
-    },480);
-  },720);
+
+function renderIntroTexts(){
+  const t=UI[LANG].intro;
+  $('introEyebrow').textContent=t.eyebrow;
+  $('introTitle').innerHTML=`<em>${t.titleEm}</em><br>${t.titleMain}`;
+  $('introSub').innerHTML=t.sub;
+  $('storeLabel').textContent=t.storeLabel;
+  $('btnStart').textContent=t.btnStart;
+  document.querySelectorAll('.store').forEach(b=>{
+    const code=b.dataset.store;
+    b.textContent=code==='팝업·기타'?t.storePopup:`${t.storePrefix} ${UI[LANG].store[code]}`;
+  });
 }
-function showGachaResult(g){
-  gachaDrawn=true; gachaBusy=false;
-  const stamp=nowStamp();
-  const res=$('gachaResult');
-  res.style.setProperty('--flash',g.color);
-  res.innerHTML=`<div class="gc-card" style="--grad:${g.grad};--gink:${g.gink}">
-    <div class="gc-cheer">${g.cheer}</div>
-    <div class="gc-rank rolling" id="gcRankNum">?</div>
-    <div class="gc-tag">${g.tag}</div>
-    <div class="gc-label">${g.label} 당첨</div>
-    <div class="gc-desc">${g.desc}</div>
-    <div class="gc-time">뽑은 시각 · ${stamp}</div>
-  </div>`;
-  res.classList.add('show');
-  let n=0;
-  const spin=setInterval(()=>{ n=(n%5)+1; $('gcRankNum').textContent=n; },90);
-  setTimeout(()=>{
-    clearInterval(spin);
-    const rn=$('gcRankNum');
-    rn.textContent=g.rank;
-    rn.classList.remove('rolling'); rn.classList.add('landed');
-    res.classList.add('flash');
-    burstConfetti(g);
-    $('gcNotice').style.display='';
-    setGachaLock(g.rank,stamp);
+
+function refreshUI(){
+  renderIntroTexts();
+  if($('scr-quiz').classList.contains('on')) renderQ();
+  if($('scr-result').classList.contains('on')&&lastResult) renderResultDisplay();
+  if($('scr-gacha').classList.contains('on')){
+    renderGachaStaticTexts();
+    if(lastGachaIndex!==null) renderGachaResultDOM(lastGachaIndex,lastGachaStamp);
     applyGachaLock();
-    armIdle();
-  },640);
+  }
 }
-function resetGacha(){
-  gachaBusy=false;
-  $('machine').classList.remove('shake-slow','shake');
-  $('gSuspense').innerHTML='&nbsp;';
-  $('capsuleSlot').innerHTML='';
-  $('gachaResult').classList.remove('show','flash');
-  $('gachaResult').innerHTML='';
-  $('gcNotice').style.display='none';
-  $('confettiLayer').innerHTML='';
-  applyGachaLock();
-}
-$('btnGachaStart').addEventListener('click',()=>{ fillDome(); applyGachaLock(); show('scr-gacha'); armIdle(); });
-$('btnGachaBack').addEventListener('click',()=>show('scr-result'));
-$('btnGachaHome').addEventListener('click',reset);
 
 /* ---------- 인트로 ---------- */
 const STORES=['광안','전포','한남','소격','팝업·기타'];
 STORES.forEach(s=>{
   const b=document.createElement('button');
-  b.className='store'; b.textContent=s==='팝업·기타'?s:`센티카 ${s}`;
+  b.className='store'; b.dataset.store=s;
   b.addEventListener('click',()=>{
     store=s;
     document.querySelectorAll('.store').forEach(x=>x.classList.remove('sel'));
@@ -912,18 +1284,20 @@ $('btnStart').addEventListener('click',()=>{ step=0; answers=[]; setMood('def');
 
 /* ---------- 설문 ---------- */
 function renderQ(){
-  const q=QUESTIONS[step];
-  $('qStep').innerHTML=`<b>0${step+1}</b> — 0${QUESTIONS.length}`;
+  const q=QUESTIONS[step], qt=QT[LANG][step];
+  $('qStep').innerHTML=`<b>0${step+1}</b> ${UI[LANG].quiz.sep} 0${QUESTIONS.length}`;
   $('progBar').style.width=`${(step)/QUESTIONS.length*100}%`;
-  $('qTitle').textContent=q.title;
-  $('qSub').textContent=q.sub||''; $('qSub').style.display=q.sub?'':'none';
+  $('qTitle').textContent=qt.title;
+  $('qSub').textContent=qt.sub||''; $('qSub').style.display=qt.sub?'':'none';
   const box=$('opts');
   box.className='opts'+(q.cls?' '+q.cls:'');
   box.innerHTML='';
   q.opts.forEach((o,idx)=>{
+    const ot=qt.opts[idx];
     const d=document.createElement('button');
     d.className='opt';
-    d.innerHTML=`<span class="ic">${o.i}</span><span class="l">${o.l}</span>${o.s?`<span class="s">${o.s}</span>`:''}`;
+    if(answers[step]===idx)d.classList.add('sel');
+    d.innerHTML=`<span class="ic">${o.i}</span><span class="l">${ot.l}</span>${ot.s?`<span class="s">${ot.s}</span>`:''}`;
     d.addEventListener('click',()=>{
       if(box.dataset.lock)return;
       box.dataset.lock='1';
@@ -945,28 +1319,28 @@ $('btnBack').addEventListener('click',()=>{
 });
 
 /* ---------- 분석 연출 ---------- */
-const LOAD_MSGS=['취향의 결을 읽고 있습니다','노트를 하나씩 고르고 있습니다','잔향의 온도를 맞추고 있습니다'];
 function finish(){
   $('progBar').style.width='100%';
   show('scr-loading');
-  let i=0; $('loadMsg').textContent=LOAD_MSGS[0];
+  const msgs=LOAD_MSGS[LANG];
+  let i=0; $('loadMsg').textContent=msgs[0];
   const t=setInterval(()=>{
     i++;
-    if(i<LOAD_MSGS.length){
+    if(i<msgs.length){
       $('loadMsg').style.opacity=0;
-      setTimeout(()=>{$('loadMsg').textContent=LOAD_MSGS[i];$('loadMsg').style.opacity=1;},350);
+      setTimeout(()=>{$('loadMsg').textContent=msgs[i];$('loadMsg').style.opacity=1;},350);
     }else{ clearInterval(t); renderResult(); }
   },1100);
 }
 
 /* ---------- 스코어링 ---------- */
 function compute(){
-  const pool=P.filter(p=>!p.store||p.store===store);
-  const scored=pool.map(p=>{
+  const pool=P.map((p,idx)=>({p,idx})).filter(o=>!o.p.store||o.p.store===store);
+  const scored=pool.map(o=>{
     let s=0;
-    QUESTIONS.forEach((q,i)=>{ s+=q.opts[answers[i]].fx(p); });
-    if(p.store&&p.store===store)s+=1.5;
-    return {p,s};
+    QUESTIONS.forEach((q,i)=>{ s+=q.opts[answers[i]].fx(o.p); });
+    if(o.p.store&&o.p.store===store)s+=1.5;
+    return {p:o.p,idx:o.idx,s};
   });
   const picks=weightedPick(scored,3);
   const allS=scored.map(x=>x.s);
@@ -993,7 +1367,6 @@ function weightedPick(scored,k){
 }
 
 /* ---------- 결과 ---------- */
-const RANKS=['베스트 매치','두 번째 향','세 번째 향'];
 const FAM_MOOD=[['aq','aqua'],['in','incense'],['gm','gourmand'],['sp','spicy'],['le','woody'],['wd','woody'],['mu','musk'],['pw','musk'],['fr','fruity'],['ci','citrus'],['fl','floral']];
 /* 매치율은 top3 사이의 상대 비율이 아니라, 이번 설문에서 나온 전체 후보군의
    점수 분포(minS~maxS) 안에서 각 향이 어디에 위치하는지로 계산한다(78~98%).
@@ -1008,41 +1381,270 @@ function matchPcts(top3,minS,maxS){
   for(let i=1;i<raw.length;i++){ if(raw[i]>raw[i-1]-MIN_GAP)raw[i]=raw[i-1]-MIN_GAP; }
   return raw.map(v=>Math.round(v));
 }
+
+function psychHTML(bestName){
+  const t=UI[LANG].psych;
+  const q1=t.q1[answers[0]], q2=t.q2[answers[1]], q4=t.q4[answers[3]], q5=t.q5[answers[4]];
+  return `<div class="psych-eyebrow">${t.eyebrow}</div>
+    <p class="psych-text">${t.lead} ${q1} ${q2} ${q4} ${q5}</p>
+    <p class="psych-text">${t.closing(bestName)}</p>`;
+}
+
 function renderResult(){
   const {picks:top3,minS,maxS}=compute();
-  const best=top3[0];
-  const lead=FAM_MOOD.find(([k])=>g(best.p,k)>=2);
-  setMood(lead?lead[1]:'floral');
-  $('rSub').textContent=store&&store!=='팝업·기타'?`센티카 ${store}에서 만날 수 있는 큐레이션입니다`:'센티카가 고른 오늘의 큐레이션입니다';
   const pcts=matchPcts(top3,minS,maxS);
-  $('rCards').innerHTML=top3.map((r,i)=>{
-    const p=r.p, pct=pcts[i];
-    return `<article class="rcard${i===0?' first':''}">
-      <div class="r-rank">
-        <span class="rank-tag">${RANKS[i]}</span>
-        <span class="badge${p.line==='익스클루시브'?' excl':''}">${p.line==='익스클루시브'?`${p.store} 매장 단독`:p.line+' 라인'}</span>
-      </div>
-      <h3 class="r-name">${p.name}</h3>
-      ${p.en?`<div class="r-en">${p.en}</div>`:''}
-      <div class="r-fam">${p.fam}</div>
-      <div class="r-match"><b>${pct}%</b><span>MATCH</span></div>
-      ${p.story?`<div class="r-story">${p.story}</div>`:''}
-      <div class="chips">${p.notes.map(n=>`<span class="chip">${n}</span>`).join('')}</div>
-      <div class="journey">
-        <div class="j-row"><span class="j-k">첫인상</span><span class="j-v">${p.top}</span></div>
-        <div class="j-row"><span class="j-k">피어남</span><span class="j-v">${p.mid}</span></div>
-        <div class="j-row"><span class="j-k">잔향</span><span class="j-v">${p.dry}</span></div>
-      </div>
-    </article>`;
-  }).join('');
+  lastResult={top3,minS,maxS,pcts,storeAtCompute:store,answersAtCompute:answers.slice()};
+  renderResultDisplay();
   show('scr-result');
   $('scr-result').scrollTop=0;
   armIdle();
 }
 
+function renderResultDisplay(){
+  const {top3,pcts,storeAtCompute}=lastResult;
+  const rt=UI[LANG].result;
+  const best=top3[0];
+  const lead=FAM_MOOD.find(([k])=>g(best.p,k)>=2);
+  setMood(lead?lead[1]:'floral');
+  $('resultEyebrow').textContent=rt.eyebrow;
+  $('resultTitle').textContent=rt.title;
+  $('rSub').textContent=storeAtCompute&&storeAtCompute!=='팝업·기타'?rt.subStore(UI[LANG].store[storeAtCompute]):rt.subDefault;
+  const bestName=PERFUME_TEXT[LANG][best.idx].name;
+  $('psychCard').innerHTML=psychHTML(bestName);
+  $('rNoticeBadge').textContent=rt.noticeBadge;
+  $('rNoticeTitle').textContent=rt.noticeTitle;
+  $('rNoticeSub').textContent=rt.noticeSub;
+  $('gachaCtaLabel').textContent=rt.gachaCtaLabel;
+  $('gachaCtaSub').textContent=rt.gachaCtaSub;
+  $('btnRetry').textContent=rt.retry;
+  $('ctaLabel').textContent=rt.ctaLabel;
+  $('ctaSub').textContent=rt.ctaSub;
+  $('rCards').innerHTML=top3.map((r,i)=>{
+    const p=r.p, tx=PERFUME_TEXT[LANG][r.idx], pct=pcts[i];
+    const badgeText=p.line==='익스클루시브'?rt.exclBadge(UI[LANG].store[p.store]):rt.lineBadge(UI[LANG].line[p.line]);
+    return `<article class="rcard${i===0?' first':''}">
+      <div class="r-rank">
+        <span class="rank-tag">${rt.ranks[i]}</span>
+        <span class="badge${p.line==='익스클루시브'?' excl':''}">${badgeText}</span>
+      </div>
+      <h3 class="r-name">${tx.name}</h3>
+      ${tx.en?`<div class="r-en">${tx.en}</div>`:''}
+      <div class="r-fam">${tx.fam}</div>
+      <div class="r-match"><b>${pct}%</b><span>MATCH</span></div>
+      ${tx.story?`<div class="r-story">${tx.story}</div>`:''}
+      <div class="chips">${tx.notes.map(n=>`<span class="chip">${n}</span>`).join('')}</div>
+      <div class="journey">
+        <div class="j-row"><span class="j-k">${rt.jTop}</span><span class="j-v">${tx.top}</span></div>
+        <div class="j-row"><span class="j-k">${rt.jMid}</span><span class="j-v">${tx.mid}</span></div>
+        <div class="j-row"><span class="j-k">${rt.jDry}</span><span class="j-v">${tx.dry}</span></div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+/* ===================== 가챠 이벤트 ===================== */
+const GACHA_LOCK_KEY='scentica_gacha_lock';
+function todayStr(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function nowStamp(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function getGachaLock(){
+  try{
+    const raw=localStorage.getItem(GACHA_LOCK_KEY);
+    if(!raw)return null;
+    const data=JSON.parse(raw);
+    return data.date===todayStr()?data:null;
+  }catch(e){ return null; }
+}
+function setGachaLock(rank,stamp){
+  try{ localStorage.setItem(GACHA_LOCK_KEY,JSON.stringify({date:todayStr(),rank,stamp})); }catch(e){}
+}
+function applyGachaLock(){
+  const lock=getGachaLock();
+  const notice=$('gLockNotice'), pull=$('btnPull'), gt=UI[LANG].gacha;
+  $('gLockBadge').textContent=gt.lockBadge;
+  $('gLockTitle').textContent=gt.lockTitle;
+  if(lock){
+    const gtx=GACHA_TEXT[LANG][lock.rank-1];
+    $('gLockSub').textContent=gt.lockSub(gtx?gtx.label:lock.rank,gtx?gtx.desc:'',lock.stamp);
+    notice.style.display='';
+    pull.disabled=true; pull.textContent=gt.pullDone;
+    gachaDrawn=true;
+  }else{
+    notice.style.display='none';
+    pull.textContent=gt.pull;
+    if(!gachaBusy){ pull.disabled=false; gachaDrawn=false; }
+  }
+}
+function renderGachaStaticTexts(){
+  const gt=UI[LANG].gacha;
+  $('gachaStep').textContent=gt.step;
+  $('gachaEyebrow').textContent=gt.eyebrow;
+  $('gachaTitle').textContent=gt.title;
+  $('gcSub').textContent=gt.sub;
+  $('btnPull').textContent=gachaDrawn?(getGachaLock()?gt.pullDone:gt.pull):gt.pull;
+  $('gcNoticeBadge').textContent=gt.noticeBadge;
+  $('gcNoticeTitle').textContent=gt.noticeTitle;
+  $('gcNoticeSub').textContent=gt.noticeSub;
+}
+function burstConfetti(cfg){
+  const layer=$('confettiLayer'); layer.innerHTML='';
+  const {count,dist,dur}=cfg.confetti;
+  for(let i=0;i<count;i++){
+    const s=document.createElement('span');
+    s.className='confetti-piece';
+    s.textContent=cfg.emojis[i%cfg.emojis.length];
+    const spread=(Math.random()*2-1)*dist;
+    const rise=-(dist*0.5+Math.random()*dist*0.7);
+    const rot=(Math.random()*720-360).toFixed(0);
+    const pdur=(dur*(0.75+Math.random()*0.5)).toFixed(0);
+    const delay=(Math.random()*220).toFixed(0);
+    s.style.setProperty('--dx',spread.toFixed(0)+'px');
+    s.style.setProperty('--dy',rise.toFixed(0)+'px');
+    s.style.setProperty('--rot',rot+'deg');
+    s.style.setProperty('--dur',pdur+'ms');
+    s.style.setProperty('--delay',delay+'ms');
+    s.style.fontSize=(14+Math.random()*14)+'px';
+    layer.appendChild(s);
+  }
+  setTimeout(()=>{ layer.innerHTML=''; },dur+700);
+}
+function pickGacha(){
+  const total=GACHA_CONFIG.reduce((a,c)=>a+c.weight,0);
+  let r=Math.random()*total;
+  for(let i=0;i<GACHA_CONFIG.length;i++){ if(r<GACHA_CONFIG[i].weight)return i; r-=GACHA_CONFIG[i].weight; }
+  return GACHA_CONFIG.length-1;
+}
+function fillDome(){
+  const box=$('domeCapsulesSvg'); if(box.dataset.filled)return; box.dataset.filled='1';
+  const cols=GACHA_CONFIG.map(c=>c.color);
+  let html='';
+  for(let i=0;i<16;i++){
+    const c=cols[i%cols.length];
+    const ang=Math.random()*Math.PI*2, rad=Math.sqrt(Math.random())*66;
+    const x=(118+Math.cos(ang)*rad).toFixed(1), y=(94+Math.sin(ang)*rad*0.86).toFixed(1);
+    const phase=(Math.random()*3).toFixed(2);
+    html+=`<g>
+      <animateTransform attributeName="transform" type="translate" values="${x} ${y}; ${x} ${(y-4).toFixed(1)}; ${x} ${y}" dur="3s" begin="-${phase}s" repeatCount="indefinite"/>
+      <circle r="9" fill="${c}"/>
+      <path d="M -9 0 A 9 9 0 0 1 9 0 Z" fill="#fff" fill-opacity=".55"/>
+      <rect x="-9" y="-0.6" width="18" height="1.2" fill="#000" fill-opacity=".18"/>
+      <circle cx="-3" cy="-3" r="2" fill="#fff" fill-opacity=".85"/>
+    </g>`;
+  }
+  box.innerHTML=html;
+}
+let gachaDrawn=false, gachaBusy=false;
+$('btnPull').addEventListener('click',()=>{
+  if(gachaBusy||gachaDrawn||getGachaLock())return;
+  gachaBusy=true; $('btnPull').disabled=true;
+  const susp=$('gSuspense'), mach=$('machine'), msgs=SUSPENSE_MSGS[LANG];
+  susp.textContent=msgs[0];
+  mach.classList.add('shake-slow');
+  setTimeout(()=>{
+    mach.classList.remove('shake-slow'); mach.classList.add('shake');
+    susp.textContent=msgs[1];
+  },1300);
+  setTimeout(()=>{
+    mach.classList.remove('shake');
+    susp.textContent=msgs[2];
+  },2900);
+  setTimeout(()=>{ susp.innerHTML='&nbsp;'; dropCapsule(); },3400);
+});
+function dropCapsule(){
+  const idx=pickGacha();
+  const cfg=GACHA_CONFIG[idx];
+  const slot=$('capsuleSlot');
+  slot.innerHTML=`<div class="capsule falling" style="--capcolor:${cfg.color}">
+    <div class="cap-top"></div><div class="cap-bot"></div><div class="cap-seam"></div><div class="cap-shine"></div>
+  </div>`;
+  const cap=slot.querySelector('.capsule');
+  setTimeout(()=>{
+    cap.classList.add('landed');
+    setTimeout(()=>{
+      cap.classList.add('open');
+      setTimeout(()=>{ showGachaResult(idx); },650);
+    },480);
+  },720);
+}
+function showGachaResult(idx){
+  gachaDrawn=true; gachaBusy=false;
+  const stamp=nowStamp();
+  lastGachaIndex=idx; lastGachaStamp=stamp;
+  const cfg=GACHA_CONFIG[idx];
+  const res=$('gachaResult');
+  res.style.setProperty('--flash',cfg.color);
+  res.innerHTML=`<div class="gc-card" style="--grad:${cfg.grad};--gink:${cfg.gink}">
+    <div class="gc-cheer" id="gcCheer"></div>
+    <div class="gc-rank rolling" id="gcRankNum">?</div>
+    <div class="gc-tag" id="gcTag"></div>
+    <div class="gc-label" id="gcLabel"></div>
+    <div class="gc-desc" id="gcDesc"></div>
+    <div class="gc-time" id="gcTime"></div>
+  </div>`;
+  res.classList.add('show');
+  fillGachaResultText(idx,stamp);
+  let n=0;
+  const spin=setInterval(()=>{ n=(n%5)+1; $('gcRankNum').textContent=n; },90);
+  setTimeout(()=>{
+    clearInterval(spin);
+    const rn=$('gcRankNum');
+    rn.textContent=cfg.rank;
+    rn.classList.remove('rolling'); rn.classList.add('landed');
+    res.classList.add('flash');
+    burstConfetti(cfg);
+    $('gcNotice').style.display='';
+    setGachaLock(cfg.rank,stamp);
+    applyGachaLock();
+    armIdle();
+  },640);
+}
+function fillGachaResultText(idx,stamp){
+  const gtx=GACHA_TEXT[LANG][idx], gt=UI[LANG].gacha;
+  $('gcCheer').textContent=gtx.cheer;
+  $('gcTag').textContent=gtx.tag;
+  $('gcLabel').textContent=gt.win(gtx.label);
+  $('gcDesc').textContent=gtx.desc;
+  $('gcTime').textContent=`${gt.timeLabel}${stamp}`;
+}
+function renderGachaResultDOM(idx,stamp){
+  /* 언어 전환 시, 애니메이션 없이 이미 확정된 결과를 다시 그린다 */
+  const cfg=GACHA_CONFIG[idx];
+  const res=$('gachaResult');
+  if(!res.classList.contains('show'))return;
+  res.innerHTML=`<div class="gc-card" style="--grad:${cfg.grad};--gink:${cfg.gink}">
+    <div class="gc-cheer" id="gcCheer"></div>
+    <div class="gc-rank landed" id="gcRankNum">${cfg.rank}</div>
+    <div class="gc-tag" id="gcTag"></div>
+    <div class="gc-label" id="gcLabel"></div>
+    <div class="gc-desc" id="gcDesc"></div>
+    <div class="gc-time" id="gcTime"></div>
+  </div>`;
+  fillGachaResultText(idx,stamp);
+}
+function resetGacha(){
+  gachaBusy=false; lastGachaIndex=null; lastGachaStamp=null;
+  $('machine').classList.remove('shake-slow','shake');
+  $('gSuspense').innerHTML='&nbsp;';
+  $('capsuleSlot').innerHTML='';
+  $('gachaResult').classList.remove('show','flash');
+  $('gachaResult').innerHTML='';
+  $('gcNotice').style.display='none';
+  $('confettiLayer').innerHTML='';
+  applyGachaLock();
+}
+$('btnGachaStart').addEventListener('click',()=>{ fillDome(); renderGachaStaticTexts(); applyGachaLock(); show('scr-gacha'); armIdle(); });
+$('btnGachaBack').addEventListener('click',()=>show('scr-result'));
+$('btnGachaHome').addEventListener('click',reset);
+
 /* ---------- 리셋 & 방치 타이머 ---------- */
 function reset(){
-  store=null; step=0; answers=[]; setMood('def');
+  store=null; step=0; answers=[]; setMood('def'); lastResult=null;
   document.querySelectorAll('.store').forEach(x=>x.classList.remove('sel'));
   $('btnStart').classList.remove('ready');
   resetGacha();
@@ -1060,6 +1662,9 @@ function armIdle(){
 }
 document.addEventListener('touchstart',()=>{ if(isIdleScreen())armIdle(); },{passive:true});
 document.addEventListener('contextmenu',e=>e.preventDefault());
+
+/* ---------- 초기화 ---------- */
+setLang(LANG);
 </script>
 </body>
 </html>
