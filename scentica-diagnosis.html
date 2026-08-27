@@ -310,12 +310,13 @@ body{
   display:flex;gap:6px;
 }
 .lang-btn{
-  min-height:30px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);
+  width:34px;height:34px;padding:0;border-radius:50%;border:1px solid var(--line);
   background:rgba(255,255,255,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  color:var(--ink2);font-size:11px;font-family:var(--sans);letter-spacing:.06em;cursor:pointer;
-  transition:background .2s,color .2s,border-color .2s;
+  font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,box-shadow .2s,transform .12s;
 }
-.lang-btn.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.lang-btn.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.lang-btn:active{transform:scale(.94)}
 
 /* ---------- psych insight ---------- */
 .psych-card{
@@ -333,7 +334,7 @@ body{
   .r-match{position:static;text-align:left;margin-top:10px}
   .screen{padding:0 20px calc(24px + env(safe-area-inset-bottom))}
   .langbar{top:calc(10px + env(safe-area-inset-top));right:10px}
-  .lang-btn{padding:5px 9px;font-size:10px}
+  .lang-btn{width:30px;height:30px;font-size:14px}
 }
 </style>
 </head>
@@ -342,9 +343,9 @@ body{
 <div class="grain"></div>
 <div class="confetti-layer" id="confettiLayer"></div>
 <div class="langbar" id="langbar">
-  <button class="lang-btn" data-lang="ko">KOR</button>
-  <button class="lang-btn" data-lang="en">ENG</button>
-  <button class="lang-btn" data-lang="zh">中文</button>
+  <button class="lang-btn" data-lang="ko" aria-label="한국어">🇰🇷</button>
+  <button class="lang-btn" data-lang="en" aria-label="English">🇺🇸</button>
+  <button class="lang-btn" data-lang="zh" aria-label="中文">🇨🇳</button>
 </div>
 
 <div class="stage">
