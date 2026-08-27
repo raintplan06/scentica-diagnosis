@@ -310,11 +310,11 @@ body{
   display:flex;gap:6px;
 }
 .lang-btn{
-  width:34px;height:34px;padding:0;border-radius:50%;border:1px solid var(--line);
-  background:rgba(255,255,255,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  width:32px;height:22px;padding:0;border-radius:5px;overflow:hidden;border:1px solid var(--line);
+  cursor:pointer;display:block;box-shadow:0 1px 3px rgba(0,0,0,.15);
   transition:border-color .2s,box-shadow .2s,transform .12s;
 }
+.lang-btn svg{display:block;width:100%;height:100%}
 .lang-btn.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
 .lang-btn:active{transform:scale(.94)}
 
@@ -334,7 +334,7 @@ body{
   .r-match{position:static;text-align:left;margin-top:10px}
   .screen{padding:0 20px calc(24px + env(safe-area-inset-bottom))}
   .langbar{top:calc(10px + env(safe-area-inset-top));right:10px}
-  .lang-btn{width:30px;height:30px;font-size:14px}
+  .lang-btn{width:28px;height:19px}
 }
 </style>
 </head>
@@ -343,9 +343,69 @@ body{
 <div class="grain"></div>
 <div class="confetti-layer" id="confettiLayer"></div>
 <div class="langbar" id="langbar">
-  <button class="lang-btn" data-lang="ko" aria-label="한국어">🇰🇷</button>
-  <button class="lang-btn" data-lang="en" aria-label="English">🇺🇸</button>
-  <button class="lang-btn" data-lang="zh" aria-label="中文">🇨🇳</button>
+  <button class="lang-btn" data-lang="ko" aria-label="한국어"><svg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+    <rect width="30" height="20" fill="#FFFFFF"/>
+    <g transform="translate(15,10) rotate(-33.7)">
+      <circle r="5" fill="#0047A0"/>
+      <path d="M0,-5 A5,5 0 0,1 0,5 A2.5,2.5 0 0,0 0,0 A2.5,2.5 0 0,1 0,-5 Z" fill="#CD2E3A"/>
+      <circle cy="-2.5" r="1.25" fill="#0047A0"/>
+      <circle cy="2.5" r="1.25" fill="#CD2E3A"/>
+    </g>
+    <g fill="#000000">
+      <g transform="translate(4.2,3.4) rotate(-33.7)">
+        <rect x="-2.2" y="-1.5" width="4.4" height="0.55"/>
+        <rect x="-2.2" y="-0.28" width="4.4" height="0.55"/>
+        <rect x="-2.2" y="0.95" width="4.4" height="0.55"/>
+      </g>
+      <g transform="translate(4.2,16.6) rotate(33.7)">
+        <rect x="-2.2" y="-1.5" width="4.4" height="0.55"/>
+        <rect x="-2.2" y="-0.28" width="1.8" height="0.55"/>
+        <rect x="0.4" y="-0.28" width="1.8" height="0.55"/>
+        <rect x="-2.2" y="0.95" width="4.4" height="0.55"/>
+      </g>
+      <g transform="translate(25.8,3.4) rotate(-33.7)">
+        <rect x="-2.2" y="-1.5" width="1.8" height="0.55"/>
+        <rect x="0.4" y="-1.5" width="1.8" height="0.55"/>
+        <rect x="-2.2" y="-0.28" width="4.4" height="0.55"/>
+        <rect x="-2.2" y="0.95" width="1.8" height="0.55"/>
+        <rect x="0.4" y="0.95" width="1.8" height="0.55"/>
+      </g>
+      <g transform="translate(25.8,16.6) rotate(33.7)">
+        <rect x="-2.2" y="-1.5" width="1.8" height="0.55"/>
+        <rect x="0.4" y="-1.5" width="1.8" height="0.55"/>
+        <rect x="-2.2" y="-0.28" width="1.8" height="0.55"/>
+        <rect x="0.4" y="-0.28" width="1.8" height="0.55"/>
+        <rect x="-2.2" y="0.95" width="1.8" height="0.55"/>
+        <rect x="0.4" y="0.95" width="1.8" height="0.55"/>
+      </g>
+    </g>
+  </svg></button>
+  <button class="lang-btn" data-lang="en" aria-label="English"><svg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+    <rect width="30" height="20" fill="#B22234"/>
+    <g fill="#FFFFFF">
+      <rect y="2.86" width="30" height="2.86"/>
+      <rect y="8.57" width="30" height="2.86"/>
+      <rect y="14.29" width="30" height="2.86"/>
+    </g>
+    <rect width="12" height="11.43" fill="#3C3B6E"/>
+    <g fill="#FFFFFF">
+      <circle cx="2" cy="1.9" r="0.55"/><circle cx="5" cy="1.9" r="0.55"/><circle cx="8" cy="1.9" r="0.55"/><circle cx="11" cy="1.9" r="0.55"/>
+      <circle cx="3.5" cy="3.8" r="0.55"/><circle cx="6.5" cy="3.8" r="0.55"/><circle cx="9.5" cy="3.8" r="0.55"/>
+      <circle cx="2" cy="5.7" r="0.55"/><circle cx="5" cy="5.7" r="0.55"/><circle cx="8" cy="5.7" r="0.55"/><circle cx="11" cy="5.7" r="0.55"/>
+      <circle cx="3.5" cy="7.6" r="0.55"/><circle cx="6.5" cy="7.6" r="0.55"/><circle cx="9.5" cy="7.6" r="0.55"/>
+      <circle cx="2" cy="9.5" r="0.55"/><circle cx="5" cy="9.5" r="0.55"/><circle cx="8" cy="9.5" r="0.55"/><circle cx="11" cy="9.5" r="0.55"/>
+    </g>
+  </svg></button>
+  <button class="lang-btn" data-lang="zh" aria-label="中文"><svg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+    <rect width="30" height="20" fill="#DE2910"/>
+    <g fill="#FFDE00">
+      <path transform="translate(6,5) scale(2.6)" d="M0,-1 L0.294,-0.405 L0.951,-0.309 L0.476,0.155 L0.588,0.809 L0,0.5 L-0.588,0.809 L-0.476,0.155 L-0.951,-0.309 L-0.294,-0.405 Z"/>
+      <path transform="translate(11.5,2.2) scale(0.85)" d="M0,-1 L0.294,-0.405 L0.951,-0.309 L0.476,0.155 L0.588,0.809 L0,0.5 L-0.588,0.809 L-0.476,0.155 L-0.951,-0.309 L-0.294,-0.405 Z"/>
+      <path transform="translate(13.3,4.6) scale(0.85)" d="M0,-1 L0.294,-0.405 L0.951,-0.309 L0.476,0.155 L0.588,0.809 L0,0.5 L-0.588,0.809 L-0.476,0.155 L-0.951,-0.309 L-0.294,-0.405 Z"/>
+      <path transform="translate(13,7.4) scale(0.85)" d="M0,-1 L0.294,-0.405 L0.951,-0.309 L0.476,0.155 L0.588,0.809 L0,0.5 L-0.588,0.809 L-0.476,0.155 L-0.951,-0.309 L-0.294,-0.405 Z"/>
+      <path transform="translate(11,9.4) scale(0.85)" d="M0,-1 L0.294,-0.405 L0.951,-0.309 L0.476,0.155 L0.588,0.809 L0,0.5 L-0.588,0.809 L-0.476,0.155 L-0.951,-0.309 L-0.294,-0.405 Z"/>
+    </g>
+  </svg></button>
 </div>
 
 <div class="stage">
