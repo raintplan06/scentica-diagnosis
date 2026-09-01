@@ -13,6 +13,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000000'/%3E%3Ctext x='32' y='45' font-family='Pretendard,sans-serif' font-size='40' fill='%23FFFFFF' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3Ctext x='32' y='45' font-family='Pretendard,sans-serif' font-size='40' fill='%23FFFFFF' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap">
 <style>
 :root{
   --paper:#FFFFFF;
@@ -59,6 +60,13 @@ body{
   padding:calc(26px + env(safe-area-inset-top)) 0 0;letter-spacing:.16em;font-size:16px;font-weight:600;
   color:var(--ink);text-indent:.16em;
 }
+/* 인트로 화면일 때만 로고를 좌상단으로 옮겨 비대칭 포스터 구도를 만든다.
+   퀴즈·결과·가챠 화면의 중앙 정렬 로고는 그대로 유지. */
+.stage:has(#scr-intro.on) .brand{
+  position:absolute;z-index:3;padding:0;text-indent:0;
+  top:calc(26px + env(safe-area-inset-top));
+  left:calc(32px + env(safe-area-inset-left));
+}
 .screen{
   display:none;width:100%;max-width:880px;flex:1;min-height:0;
   padding:0 32px calc(32px + env(safe-area-inset-bottom));
@@ -72,60 +80,61 @@ body{
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
 
-/* ---------- intro ---------- */
-/* 언어별로 타이틀 줄바꿈·매장 버튼 줄 수가 달라지면, 아래 .intro-body가
-   전체를 세로 중앙 정렬하던 방식으로는 그 위의 "PERFUME CURATION" 문구까지
-   언어마다 높이가 들쭉날쭉해진다. eyebrow는 상단에 고정하고, 그 아래
-   본문(.intro-body)만 남은 공간에서 중앙 정렬되도록 분리한다. */
-#scr-intro{justify-content:flex-start;position:relative}
-/* 향이 은은하게 퍼지는 이미지를 모노크롬 톤의 부드러운 라디얼 글로우로 표현한
-   시그니처 요소 — 컬러 없이도 화면에 깊이감을 준다. */
+/* ---------- intro: 비대칭 포스터 ---------- */
+/* 좌상단 로고+eyebrow는 고정, 본문(.intro-body)은 화면 하단에 좌측 정렬로 앉혀
+   에디토리얼 포스터 구도를 만든다. eyebrow가 절대 위치라 언어별 타이틀/버튼
+   줄바꿈 차이와 무관하게 위치가 항상 동일하다. */
+#scr-intro{justify-content:flex-end;align-items:flex-start;position:relative}
+/* 시그니처 요소: 큰 세리프 이니셜 "S"를 우상단에 흐리게 배치 — 컬러 없이 포스터 같은 깊이감. */
 #scr-intro::before{
-  content:'';position:absolute;z-index:-1;pointer-events:none;
-  top:50%;left:50%;width:min(640px,120vw);height:min(640px,120vw);
-  transform:translate(-50%,-46%);
-  background:radial-gradient(circle, rgba(0,0,0,.09), rgba(0,0,0,.03) 46%, transparent 72%);
-}
-.intro-body{
-  width:100%;flex:1;min-height:0;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  content:'S';position:absolute;z-index:-1;pointer-events:none;
+  top:-9%;right:-5%;font-family:'Gowun Batang','Noto Serif KR',serif;font-weight:700;line-height:1;
+  font-size:min(46vw,420px);color:rgba(0,0,0,.045);
 }
 .intro-eyebrow{
-  display:inline-block;font-size:14px;letter-spacing:.3em;color:var(--ink2);text-indent:.3em;
-  margin-top:26px;margin-bottom:22px;padding:7px 18px;border-radius:999px;
+  position:absolute;z-index:3;display:inline-block;
+  top:calc(60px + env(safe-area-inset-top));left:0;
+  font-size:14px;letter-spacing:.3em;color:var(--ink2);text-indent:.3em;
+  padding:7px 18px;border-radius:999px;
   background:rgba(0,0,0,.045);border:1px solid var(--line);
 }
-.intro-title{
-  font-family:var(--serif);font-weight:400;font-size:clamp(27px,6.5vw,50px);
-  line-height:1.32;text-align:center;letter-spacing:.02em;
+.intro-body{
+  width:100%;max-width:540px;flex:1;min-height:0;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;
 }
-.intro-title em{font-style:normal;color:var(--accent);font-weight:600}
+.intro-title{
+  font-family:'Gowun Batang','Noto Serif KR',serif;font-weight:700;font-size:clamp(30px,7vw,56px);
+  line-height:1.24;text-align:left;letter-spacing:.01em;max-width:480px;
+}
+.intro-title em{font-style:normal;color:var(--accent);font-weight:700}
 .intro-sub{
-  margin-top:20px;font-size:17px;color:var(--ink2);line-height:1.7;text-align:center;font-weight:300;
+  margin-top:18px;font-size:16px;color:var(--ink2);line-height:1.7;text-align:left;font-weight:400;
+  max-width:420px;
 }
 .store-label{
-  margin-top:52px;font-size:12px;letter-spacing:.22em;color:var(--ink2);text-indent:.22em;
+  margin-top:44px;font-size:11.5px;letter-spacing:.22em;color:var(--ink2);text-indent:.22em;
 }
-.stores{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.stores{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-start;margin-top:14px}
 .store{
-  min-height:56px;padding:14px 26px;border-radius:999px;
+  min-height:52px;padding:13px 24px;border-radius:999px;
   border:1px solid var(--line);background:var(--card);
-  color:var(--ink2);font-size:16px;font-family:var(--sans);cursor:pointer;
+  color:var(--ink2);font-size:15px;font-family:var(--sans);cursor:pointer;
   transition:border-color .25s,color .25s,background .25s,transform .12s;
 }
 .store:active{transform:scale(.96)}
 .store.sel{border-color:var(--ink);color:var(--ink);background:rgba(0,0,0,.05)}
 /* 한글 매장명(6자 안팎)보다 영/중/일 표기가 훨씬 길어 버튼이 커지는 것을
    방지하기 위해, 언어별로 패딩·글자 크기를 줄여 버튼 크기를 한글판과 맞춘다. */
-html[lang="en"] .store{font-size:11px;padding:14px 18px}
-html[lang="zh"] .store{font-size:13px;padding:14px 18px}
-html[lang="ja"] .store{font-size:10px;padding:14px 18px}
+html[lang="en"] .store{font-size:11px;padding:13px 17px}
+html[lang="zh"] .store{font-size:12.5px;padding:13px 17px}
+html[lang="ja"] .store{font-size:9.5px;padding:13px 17px}
 .btn-start{
-  margin-top:44px;min-height:64px;padding:18px 64px;border-radius:999px;border:none;
-  font-family:var(--serif);font-size:19px;letter-spacing:.14em;text-indent:.14em;cursor:pointer;
-  background:var(--ink);color:var(--paper);
+  align-self:flex-end;margin-top:38px;min-height:60px;padding:17px 44px;border-radius:999px;border:none;
+  font-family:'Gowun Batang','Noto Serif KR',serif;font-size:17px;letter-spacing:.06em;cursor:pointer;
+  background:var(--ink);color:var(--paper);box-shadow:0 14px 28px rgba(0,0,0,.16);
   opacity:.28;pointer-events:none;transition:opacity .3s,transform .12s;
 }
+.btn-start::after{content:' →';}
 .btn-start.ready{opacity:1;pointer-events:auto}
 .btn-start:active{transform:scale(.97)}
 
