@@ -95,6 +95,11 @@ body{
 }
 .store:active{transform:scale(.96)}
 .store.sel{border-color:var(--ink);color:var(--ink);background:rgba(0,0,0,.05)}
+/* 한글 매장명(6자 안팎)보다 영/중/일 표기가 훨씬 길어 버튼이 커지는 것을
+   방지하기 위해, 언어별로 패딩·글자 크기를 줄여 버튼 크기를 한글판과 맞춘다. */
+html[lang="en"] .store{font-size:11px;padding:14px 18px}
+html[lang="zh"] .store{font-size:13px;padding:14px 18px}
+html[lang="ja"] .store{font-size:10px;padding:14px 18px}
 .btn-start{
   margin-top:44px;min-height:64px;padding:18px 64px;border-radius:999px;border:none;
   font-family:var(--serif);font-size:19px;letter-spacing:.14em;text-indent:.14em;cursor:pointer;
@@ -425,7 +430,7 @@ body{
     <p class="intro-sub" id="introSub">일곱 번의 터치로 취향을 읽고,<br>센티카의 향 스물네 가지 중 세 가지를 골라드립니다.</p>
     <div class="store-label" id="storeLabel">방문하신 매장</div>
     <div class="stores" id="stores"></div>
-    <button class="btn-start" id="btnStart">여정 시작하기</button>
+    <button class="btn-start" id="btnStart">시작하기</button>
   </section>
 
   <!-- 설문 -->
@@ -1387,7 +1392,7 @@ ko:{
   intro:{eyebrow:'PERFUME CURATION',
     titleEm:'일상에 스며드는 향기',titleMain:'당신의 취향을 찾아드립니다',
     sub:'일곱 번의 터치로 취향을 읽고,<br>센티카의 향 스물네 가지 중 세 가지를 골라드립니다.',
-    storeLabel:'방문하신 매장',storePopup:'팝업·기타',storePrefix:'센티카',btnStart:'여정 시작하기'},
+    storeLabel:'방문하신 매장',storePopup:'팝업·기타',storePrefix:'센티카',btnStart:'시작하기'},
   quiz:{sep:'—',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'당신을 위한 세 가지 향',
     subStore:s=>`센티카 ${s}에서 만날 수 있는 큐레이션입니다`,
@@ -1423,7 +1428,7 @@ en:{
   intro:{eyebrow:'PERFUME CURATION',
     titleEm:'A Scent Woven Into Everyday Life',titleMain:"We'll Discover What Suits You",
     sub:"Seven simple touches to read your taste,<br>and we'll choose three from Scentica's twenty-four fragrances.",
-    storeLabel:'Store You Visited',storePopup:'Pop-up · Other',storePrefix:'SCENTICA',btnStart:'Begin the Journey'},
+    storeLabel:'Store You Visited',storePopup:'Pop-up · Other',storePrefix:'SCENTICA',btnStart:'Start'},
   quiz:{sep:'of',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'Three Scents, Made for You',
     subStore:s=>`A curation available at SCENTICA ${s}`,
@@ -1459,7 +1464,7 @@ zh:{
   intro:{eyebrow:'PERFUME CURATION',
     titleEm:'融入日常的香气',titleMain:'为你寻回专属的气味喜好',
     sub:'只需轻触七次,读懂你的喜好,<br>从SCENTICA24款香气中,为你甄选三款。',
-    storeLabel:'到访门店',storePopup:'快闪店·其他',storePrefix:'SCENTICA',btnStart:'开启气味之旅'},
+    storeLabel:'到访门店',storePopup:'快闪店·其他',storePrefix:'SCENTICA',btnStart:'开始'},
   quiz:{sep:'/',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'为你甄选的三款香气',
     subStore:s=>`可在SCENTICA ${s}店体验的香氛甄选`,
@@ -1495,7 +1500,7 @@ ja:{
   intro:{eyebrow:'PERFUME CURATION',
     titleEm:'日常に溶け込む香り',titleMain:'あなたの好みを見つけます',
     sub:'七回のタッチで好みを読み取り、<br>センティカの24種の香りの中から3つをお選びします。',
-    storeLabel:'ご来店の店舗',storePopup:'ポップアップ・その他',storePrefix:'センティカ',btnStart:'旅を始める'},
+    storeLabel:'ご来店の店舗',storePopup:'ポップアップ・その他',storePrefix:'センティカ',btnStart:'はじめる'},
   quiz:{sep:'/',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'あなたのための3つの香り',
     subStore:s=>`センティカ${s}店で出会えるキュレーションです`,
