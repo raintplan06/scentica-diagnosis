@@ -437,8 +437,8 @@ html[lang="ja"] .store{font-size:10px;padding:14px 18px}
   <section class="screen on" id="scr-intro">
     <div class="intro-eyebrow" id="introEyebrow">PERFUME CURATION</div>
     <div class="intro-body">
-      <h1 class="intro-title" id="introTitle"><em>일상에 스며드는 향기</em><br>일곱 번의 터치로 당신의 취향을 찾아드립니다</h1>
-      <p class="intro-sub" id="introSub">24가지 향 중 3가지를 골라드립니다.</p>
+      <h1 class="intro-title" id="introTitle"><em>일상에 스며드는 향기</em></h1>
+      <p class="intro-sub" id="introSub">일곱 번의 터치로 당신의 취향을 찾아드립니다.</p>
       <div class="store-label" id="storeLabel">방문하신 매장</div>
       <div class="stores" id="stores"></div>
       <button class="btn-start" id="btnStart">시작하기</button>
@@ -1402,8 +1402,8 @@ ja:['好みの質感を読み取っています','ノートをひとつずつ選
 const UI={
 ko:{
   intro:{eyebrow:'PERFUME CURATION',
-    titleEm:'일상에 스며드는 향기',titleMain:'일곱 번의 터치로 당신의 취향을 찾아드립니다',
-    sub:'24가지 향 중 3가지를 골라드립니다.',
+    titleEm:'일상에 스며드는 향기',
+    sub:'일곱 번의 터치로 당신의 취향을 찾아드립니다.',
     storeLabel:'방문하신 매장',storePopup:'팝업·기타',storePrefix:'센티카',btnStart:'시작하기'},
   quiz:{sep:'—',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'당신을 위한 세 가지 향',
@@ -1438,8 +1438,8 @@ ko:{
 },
 en:{
   intro:{eyebrow:'PERFUME CURATION',
-    titleEm:'A Scent Woven Into Everyday Life',titleMain:"We'll Discover What Suits You",
-    sub:"Seven touches — we'll pick 3 scents from our 24.",
+    titleEm:'A Scent Woven Into Everyday Life',
+    sub:"Seven touches — we'll discover what suits you.",
     storeLabel:'Store You Visited',storePopup:'Pop-up · Other',storePrefix:'SCENTICA',btnStart:'Start'},
   quiz:{sep:'of',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'Three Scents, Made for You',
@@ -1474,8 +1474,8 @@ en:{
 },
 zh:{
   intro:{eyebrow:'PERFUME CURATION',
-    titleEm:'融入日常的香气',titleMain:'为你寻回专属的气味喜好',
-    sub:'七次轻触,从24款香气中为你甄选3款。',
+    titleEm:'融入日常的香气',
+    sub:'七次轻触,为你寻回专属的气味喜好。',
     storeLabel:'到访门店',storePopup:'快闪店·其他',storePrefix:'SCENTICA',btnStart:'开始'},
   quiz:{sep:'/',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'为你甄选的三款香气',
@@ -1510,8 +1510,8 @@ zh:{
 },
 ja:{
   intro:{eyebrow:'PERFUME CURATION',
-    titleEm:'日常に溶け込む香り',titleMain:'あなたの好みを見つけます',
-    sub:'7回のタッチで、24種の香りから3つをお選びします。',
+    titleEm:'日常に溶け込む香り',
+    sub:'7回のタッチで、あなたの好みを見つけます。',
     storeLabel:'ご来店の店舗',storePopup:'ポップアップ・その他',storePrefix:'センティカ',btnStart:'はじめる'},
   quiz:{sep:'/',back:'←'},
   result:{eyebrow:'YOUR CURATION',title:'あなたのための3つの香り',
@@ -1573,7 +1573,7 @@ document.querySelectorAll('.lang-btn').forEach(b=>{
 function renderIntroTexts(){
   const t=UI[LANG].intro;
   $('introEyebrow').textContent=t.eyebrow;
-  $('introTitle').innerHTML=`<em>${t.titleEm}</em><br>${t.titleMain}`;
+  $('introTitle').innerHTML=`<em>${t.titleEm}</em>`;
   $('introSub').innerHTML=t.sub;
   $('storeLabel').textContent=t.storeLabel;
   $('btnStart').textContent=t.btnStart;
