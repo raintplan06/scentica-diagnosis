@@ -58,7 +58,7 @@ html[lang="ja"] body,html[lang="zh"] body{word-break:normal;overflow-wrap:break-
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
 }
 .stage{
-  position:relative;z-index:2;height:100vh;height:100dvh;
+  position:relative;z-index:2;height:100vh;height:100dvh;height:var(--app-height,100dvh);
   display:flex;flex-direction:column;align-items:center;
 }
 .brand{
@@ -2029,6 +2029,21 @@ document.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- 초기화 ---------- */
 setLang(LANG);
+
+/* iOS 크롬 등 모바일 브라우저는 주소창이 떠 있을 때 100dvh가 실제 보이는
+   높이보다 크게 계산되어 하단 콘텐츠가 주소창 뒤로 가려진다.
+   visualViewport로 실제 가시 높이를 측정해 --app-height로 덮어써 보정한다. */
+function setAppHeight(){
+  const h=(window.visualViewport&&window.visualViewport.height)||window.innerHeight;
+  document.documentElement.style.setProperty('--app-height',h+'px');
+}
+setAppHeight();
+window.addEventListener('resize',setAppHeight);
+window.addEventListener('orientationchange',setAppHeight);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',setAppHeight);
+  window.visualViewport.addEventListener('scroll',setAppHeight);
+}
 </script>
 </body>
 </html>
