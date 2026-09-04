@@ -333,6 +333,7 @@ html[lang="ja"] .j-row{grid-template-columns:96px 1fr}
 .gc-label{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:12px}
 .gc-desc{font-size:15px;color:var(--ink2);line-height:1.65;font-weight:300}
 .gc-time{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);letter-spacing:.04em}
+.gc-limit{margin-top:6px;font-size:11.5px;color:var(--ink2);letter-spacing:.04em;opacity:.75}
 
 /* ---------- confetti ---------- */
 .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden}
@@ -1455,7 +1456,7 @@ ko:{
     sub:'버튼을 눌러 캡슐을 뽑고, 오늘의 등수를 확인해보세요',
     lockBadge:"TODAY'S LIMIT",lockTitle:'오늘은 이미 참여하셨습니다',
     lockSub:(label,desc,stamp)=>`${stamp?stamp+' 뽑음 · ':''}당첨: ${label}${desc?' · '+desc:''} · 가챠 이벤트는 하루에 한 번만 참여할 수 있어요. 내일 다시 도전해주세요!`,
-    pull:'캡슐 뽑기',pullDone:'오늘의 참여 완료',
+    pull:'캡슐 뽑기',pullDone:'오늘의 참여 완료',onceLimit:'1일 1회 참여 가능',
     noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'이 화면을 직원에게 보여주세요',noticeSub:'등수에 맞는 사은품을 안내드립니다',
     win:l=>`${l} 당첨`,timeLabel:'뽑은 시각 · '},
   store:{'광안':'광안','전포':'전포','한남':'한남','소격':'소격'},
@@ -1491,7 +1492,7 @@ en:{
     sub:'Press the button to pull a capsule and see today’s prize',
     lockBadge:"TODAY'S LIMIT",lockTitle:"You've already played today",
     lockSub:(label,desc,stamp)=>`${stamp?'Drawn at '+stamp+' · ':''}Result: ${label}${desc?' · '+desc:''} · The gacha draw is limited to once a day. Please try again tomorrow!`,
-    pull:'Pull a Capsule',pullDone:"Today's Draw Complete",
+    pull:'Pull a Capsule',pullDone:"Today's Draw Complete",onceLimit:'One entry per day',
     noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'Please show this screen to our staff',noticeSub:"We'll guide you to the gift matching your prize",
     win:l=>`${l}`,timeLabel:'Drawn at · '},
   store:{'광안':'Gwangan','전포':'Jeonpo','한남':'Hannam','소격':'Sogyeok'},
@@ -1527,7 +1528,7 @@ zh:{
     sub:'点击按钮抽取胶囊,查看今日中奖等级',
     lockBadge:"TODAY'S LIMIT",lockTitle:'您今天已参与过了',
     lockSub:(label,desc,stamp)=>`${stamp?stamp+' 抽取 · ':''}中奖:${label}${desc?' · '+desc:''} · 扭蛋活动每天限参与一次,请明天再来挑战!`,
-    pull:'抽取胶囊',pullDone:'今日已参与',
+    pull:'抽取胶囊',pullDone:'今日已参与',onceLimit:'每日限参与一次',
     noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'请将此页面出示给店员',noticeSub:'我们将为您介绍对应等级的赠品',
     win:l=>`中奖:${l}`,timeLabel:'抽取时间 · '},
   store:{'광안':'广安','전포':'田浦','한남':'汉南','소격':'昭格'},
@@ -1563,7 +1564,7 @@ ja:{
     sub:'ボタンを押してカプセルを引き、本日の順位を確認しましょう',
     lockBadge:"TODAY'S LIMIT",lockTitle:'本日はすでにご参加いただいています',
     lockSub:(label,desc,stamp)=>`${stamp?stamp+' 抽選 · ':''}結果:${label}${desc?' · '+desc:''} · ガチャイベントは1日1回のみご参加いただけます。また明日挑戦してください!`,
-    pull:'カプセルを引く',pullDone:'本日の参加完了',
+    pull:'カプセルを引く',pullDone:'本日の参加完了',onceLimit:'1日1回参加可能',
     noticeBadge:'PLEASE SHOW STAFF',noticeTitle:'この画面をスタッフにお見せください',noticeSub:'順位に応じたプレゼントをご案内します',
     win:l=>`${l} 当選`,timeLabel:'抽選時刻 · '},
   store:{'광안':'クァンアン','전포':'チョンポ','한남':'ハンナム','소격':'ソギョク'},
@@ -1836,7 +1837,10 @@ function applyGachaLock(){
   if(lock){
     const gtx=GACHA_TEXT[LANG][lock.rank-1];
     $('gLockSub').textContent=gt.lockSub(gtx?gtx.label:lock.rank,gtx?gtx.desc:'',lock.stamp);
-    notice.style.display='';
+    /* 이번 세션에서 방금 뽑은 결과가 떠 있는 '첫 참여'에는 안내 대신
+       결과 카드 하단의 1일 1회 문구로 충분하다. 재접속(두 번째부터)에만
+       상단에 '이미 참여하셨습니다' 안내를 노출한다. */
+    notice.style.display=(lastGachaIndex===null)?'':'none';
     pull.disabled=true; pull.textContent=gt.pullDone;
     gachaDrawn=true;
   }else{
@@ -1950,6 +1954,7 @@ function showGachaResult(idx){
     <div class="gc-label" id="gcLabel"></div>
     <div class="gc-desc" id="gcDesc"></div>
     <div class="gc-time" id="gcTime"></div>
+    <div class="gc-limit" id="gcLimit"></div>
   </div>`;
   res.classList.add('show');
   fillGachaResultText(idx,stamp);
@@ -1975,6 +1980,7 @@ function fillGachaResultText(idx,stamp){
   $('gcLabel').textContent=gt.win(gtx.label);
   $('gcDesc').textContent=gtx.desc;
   $('gcTime').textContent=`${gt.timeLabel}${stamp}`;
+  $('gcLimit').textContent=gt.onceLimit;
 }
 function renderGachaResultDOM(idx,stamp){
   /* 언어 전환 시, 애니메이션 없이 이미 확정된 결과를 다시 그린다 */
@@ -1988,6 +1994,7 @@ function renderGachaResultDOM(idx,stamp){
     <div class="gc-label" id="gcLabel"></div>
     <div class="gc-desc" id="gcDesc"></div>
     <div class="gc-time" id="gcTime"></div>
+    <div class="gc-limit" id="gcLimit"></div>
   </div>`;
   fillGachaResultText(idx,stamp);
 }
